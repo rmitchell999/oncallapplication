@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted } from 'vue';
-import moment from 'moment-timezone';
 
 import type { Schema } from '../../amplify/data/resource';
 import { generateClient } from 'aws-amplify/data';
@@ -38,13 +37,6 @@ const generateTimeOptions = () => {
 };
 
 const timeOptions = ref(generateTimeOptions());
-const timezoneOptions = ref(moment.tz.names());
-const frequencyOptions = ref(['Weekly', 'Fortnightly', 'Monthly']);
-
-const selectedFrequency = ref('Weekly');
-const selectedTimezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone);
-const startTime = ref('00:00');
-const endTime = ref('00:00');
 
 const updatePhoneNumber = (index: number) => {
   const selectedContact = contacts.value.find(contact => contact.name === onCallList.value[index].contact);
@@ -52,6 +44,7 @@ const updatePhoneNumber = (index: number) => {
     onCallList.value[index].phone = selectedContact.phone;
   }
 
+  // Update onCall status
   contacts.value.forEach(contact => {
     contact.onCall = contact.name === onCallList.value[index].contact;
   });
@@ -89,27 +82,9 @@ const deleteContact = (index: number) => {
   contacts.value.splice(index, 1);
 };
 
-const saveScheduleSettings = () => {
-  localStorage.setItem('startTime', startTime.value);
-  localStorage.setItem('endTime', endTime.value);
-  localStorage.setItem('selectedFrequency', selectedFrequency.value);
-  localStorage.setItem('selectedTimezone', selectedTimezone.value);
-  alert('Schedule settings saved!');
-};
-
-const loadScheduleSettings = () => {
-  const savedStartTime = localStorage.getItem('startTime');
-  const savedEndTime = localStorage.getItem('endTime');
-  const savedFrequency = localStorage.getItem('selectedFrequency');
-  const savedTimezone = localStorage.getItem('selectedTimezone');
-  if (savedStartTime) startTime.value = savedStartTime;
-  if (savedEndTime) endTime.value = savedEndTime;
-  if (savedFrequency) selectedFrequency.value = savedFrequency;
-  if (savedTimezone) selectedTimezone.value = savedTimezone;
-};
-
 onMounted(() => {
-  loadScheduleSettings();
+  // Example data fetching logic
+  // listOnCallSchedule();
 });
 </script>
 
@@ -122,30 +97,12 @@ onMounted(() => {
 
     <div v-if="activeTab === 'schedule'">
       <h1>Terneuzen On-Call</h1>
-      <div class="selectors">
-        <label for="frequency">Frequency</label>
-        <select id="frequency" v-model="selectedFrequency">
-          <option v-for="option in frequencyOptions" :key="option">{{ option }}</option>
-        </select>
-
-        <label for="timezone">Timezone</label>
-        <select id="timezone" v-model="selectedTimezone">
-          <option v-for="zone in timezoneOptions" :key="zone">{{ zone }}</option>
-        </select>
-
-        <label for="start-time">On call Start Time</label>
-        <select id="start-time" v-model="startTime">
-          <option v-for="time in timeOptions" :key="time">{{ time }}</option>
-        </select>
-
-        <label for="end-time">On call End Time</label>
-        <select id="end-time" v-model="endTime">
+      <div class="time-selector">
+        <label for="time">On call Start/End Time</label>
+        <select id="time">
           <option v-for="time in timeOptions" :key="time">{{ time }}</option>
         </select>
       </div>
-
-      <button @click="saveScheduleSettings">Save</button>
-      <button @click="loadScheduleSettings">Cancel</button>
       
       <table>
         <thead>
@@ -231,4 +188,82 @@ onMounted(() => {
 }
 
 .tabs button {
-  margin-right: 
+  margin-right: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+select {
+  padding: 5px;
+  width: 100%;
+}
+
+button {
+  cursor: pointer;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 400px;
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-content label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.modal-content input {
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-content button {
+  padding: 10px;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.modal-content button[type="button"] {
+  background-color: #6c757d;
+}
+</style>
