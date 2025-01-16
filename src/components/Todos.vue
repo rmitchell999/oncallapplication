@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted } from 'vue';
+import moment from 'moment-timezone';
 
 import type { Schema } from '../../amplify/data/resource';
 import { generateClient } from 'aws-amplify/data';
@@ -37,7 +38,7 @@ const generateTimeOptions = () => {
 };
 
 const timeOptions = ref(generateTimeOptions());
-const timezoneOptions = ref(Intl.supportedValuesOf('timeZone'));
+const timezoneOptions = ref(moment.tz.names());
 const frequencyOptions = ref(['Weekly', 'Fortnightly', 'Monthly']);
 
 const selectedFrequency = ref('Weekly');
@@ -51,7 +52,6 @@ const updatePhoneNumber = (index: number) => {
     onCallList.value[index].phone = selectedContact.phone;
   }
 
-  // Update onCall status
   contacts.value.forEach(contact => {
     contact.onCall = contact.name === onCallList.value[index].contact;
   });
@@ -92,14 +92,20 @@ const deleteContact = (index: number) => {
 const saveScheduleSettings = () => {
   localStorage.setItem('startTime', startTime.value);
   localStorage.setItem('endTime', endTime.value);
+  localStorage.setItem('selectedFrequency', selectedFrequency.value);
+  localStorage.setItem('selectedTimezone', selectedTimezone.value);
   alert('Schedule settings saved!');
 };
 
 const loadScheduleSettings = () => {
   const savedStartTime = localStorage.getItem('startTime');
   const savedEndTime = localStorage.getItem('endTime');
+  const savedFrequency = localStorage.getItem('selectedFrequency');
+  const savedTimezone = localStorage.getItem('selectedTimezone');
   if (savedStartTime) startTime.value = savedStartTime;
   if (savedEndTime) endTime.value = savedEndTime;
+  if (savedFrequency) selectedFrequency.value = savedFrequency;
+  if (savedTimezone) selectedTimezone.value = savedTimezone;
 };
 
 onMounted(() => {
@@ -141,7 +147,6 @@ onMounted(() => {
       <button @click="saveScheduleSettings">Save</button>
       <button @click="loadScheduleSettings">Cancel</button>
       
-      <!-- Example of extending onCallList to monthly -->
       <table>
         <thead>
           <tr>
@@ -226,16 +231,4 @@ onMounted(() => {
 }
 
 .tabs button {
-  margin-right: 10px;
-  padding: 10px;
-  cursor: pointer;
-}
-
-.selectors {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-}
-
-.selectors label {
-  margin-top: 10px
+  margin-right: 
