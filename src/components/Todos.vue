@@ -1,93 +1,3 @@
-<script setup lang="ts">
-import '@/assets/main.css';
-import { ref, onMounted } from 'vue';
-
-import type { Schema } from '../../amplify/data/resource';
-import { generateClient } from 'aws-amplify/data';
-
-const client = generateClient<Schema>();
-
-const activeTab = ref('schedule');
-
-const showModal = ref(false);
-const editIndex = ref<number | null>(null);
-const form = ref({ email: '', phone: '', name: '', onCall: false });
-const errorMessage = ref('');
-
-const contacts = ref([
-  { email: 'jeffrey@example.com', phone: '+31627296098', name: 'Jeffrey van de...', onCall: true },
-  { email: 'scott@example.com', phone: '+447785294418', name: 'Scott Beaton', onCall: false },
-]);
-
-const onCallList = ref([
-  { groupName: 'Terneuzen', day: 'Monday', contact: contacts.value[0].name, phone: contacts.value[0].phone },
-  { groupName: 'Terneuzen', day: 'Tuesday', contact: contacts.value[0].name, phone: contacts.value[0].phone },
-]);
-
-const generateTimeOptions = () => {
-  const times = [];
-  for (let i = 0; i < 24; i++) {
-    for (let j = 0; j < 60; j += 30) {
-      const hour = i < 10 ? `0${i}` : i;
-      const minute = j < 10 ? `0${j}` : j;
-      times.push(`${hour}:${minute}`);
-    }
-  }
-  return times;
-};
-
-const timeOptions = ref(generateTimeOptions());
-
-const updatePhoneNumber = (index: number) => {
-  const selectedContact = contacts.value.find(contact => contact.name === onCallList.value[index].contact);
-  if (selectedContact) {
-    onCallList.value[index].phone = selectedContact.phone;
-  }
-
-  // Update onCall status
-  contacts.value.forEach(contact => {
-    contact.onCall = contact.name === onCallList.value[index].contact;
-  });
-};
-
-const openModal = (event: MouseEvent, index: number | null = null) => {
-  event.preventDefault();
-  if (index !== null) {
-    form.value = { ...contacts.value[index] };
-    editIndex.value = index;
-  } else {
-    form.value = { email: '', phone: '', name: '', onCall: false };
-    editIndex.value = null;
-  }
-  showModal.value = true;
-  errorMessage.value = '';
-};
-
-const saveContact = () => {
-  const e164Regex = /^\+?[1-9]\d{1,14}$/;
-  if (!e164Regex.test(form.value.phone)) {
-    errorMessage.value = 'Please enter a valid E.164 phone number.';
-    return;
-  }
-
-  if (editIndex.value !== null) {
-    contacts.value[editIndex.value] = { ...form.value };
-  } else {
-    contacts.value.push({ ...form.value });
-  }
-  showModal.value = false;
-};
-
-const deleteContact = (index: number) => {
-  contacts.value.splice(index, 1);
-};
-
-onMounted(() => {
-  // Example data fetching logic
-  // listOnCallSchedule();
-});
-</script>
-
 <template>
   <div class="on-call-application">
     <div class="tabs">
@@ -97,13 +7,28 @@ onMounted(() => {
 
     <div v-if="activeTab === 'schedule'">
       <h1>Terneuzen On-Call</h1>
-      <div class="time-selector">
-        <label for="time">On call Start/End Time</label>
-        <select id="time">
+      <div class="schedule-options">
+        <label for="frequency">Frequency:</label>
+        <select id="frequency" v-model="selectedFrequency">
+          <option v-for="option in frequencyOptions" :key="option">{{ option }}</option>
+        </select>
+
+        <label for="timezone">Timezone:</label>
+        <select id="timezone" v-model="selectedTimezone">
+          <option v-for="option in timezoneOptions" :key="option">{{ option }}</option>
+        </select>
+
+        <label for="start-time">Start Time:</label>
+        <select id="start-time" v-model="startTime">
+          <option v-for="time in timeOptions" :key="time">{{ time }}</option>
+        </select>
+
+        <label for="end-time">End Time:</label>
+        <select id="end-time" v-model="endTime">
           <option v-for="time in timeOptions" :key="time">{{ time }}</option>
         </select>
       </div>
-      
+
       <table>
         <thead>
           <tr>
@@ -128,6 +53,11 @@ onMounted(() => {
           </tr>
         </tbody>
       </table>
+
+      <div class="action-buttons">
+        <button @click="saveSchedule">Save</button>
+        <button @click="cancelChanges">Cancel</button>
+      </div>
     </div>
 
     <div v-if="activeTab === 'contacts'">
@@ -177,6 +107,113 @@ onMounted(() => {
   </div>
 </template>
 
+<script setup lang="ts">
+import '@/assets/main.css';
+import { ref, onMounted } from 'vue';
+
+import type { Schema } from '../../amplify/data/resource';
+import { generateClient } from 'aws-amplify/data';
+
+const client = generateClient<Schema>();
+
+const activeTab = ref('schedule');
+const showModal = ref(false);
+const editIndex = ref<number | null>(null);
+const form = ref({ email: '', phone: '', name: '', onCall: false });
+const errorMessage = ref('');
+
+const contacts = ref([
+  { email: 'jeffrey@example.com', phone: '+31627296098', name: 'Jeffrey van de...', onCall: true },
+  { email: 'scott@example.com', phone: '+447785294418', name: 'Scott Beaton', onCall: false },
+]);
+
+const onCallList = ref([
+  { groupName: 'Terneuzen', day: 'Monday', contact: contacts.value[0].name, phone: contacts.value[0].phone },
+  { groupName: 'Terneuzen', day: 'Tuesday', contact: contacts.value[0].name, phone: contacts.value[0].phone },
+]);
+
+const generateTimeOptions = () => {
+  const times = [];
+  for (let i = 0; i < 24; i++) {
+    for (let j = 0; j < 60; j += 30) {
+      const hour = i < 10 ? `0${i}` : i;
+      const minute = j < 10 ? `0${j}` : j;
+      times.push(`${hour}:${minute}`);
+    }
+  }
+  return times;
+};
+
+const timeOptions = ref(generateTimeOptions());
+
+const frequencyOptions = ref(['Weekly', 'Fortnightly', 'Monthly']);
+const selectedFrequency = ref('Weekly');
+
+const timezoneOptions = ref(['GMT', 'EST', 'PST', 'CET']);
+const selectedTimezone = ref('GMT');
+
+const startTime = ref('');
+const endTime = ref('');
+
+const updatePhoneNumber = (index: number) => {
+  const selectedContact = contacts.value.find(contact => contact.name === onCallList.value[index].contact);
+  if (selectedContact) {
+    onCallList.value[index].phone = selectedContact.phone;
+  }
+
+  contacts.value.forEach(contact => {
+    contact.onCall = contact.name === onCallList.value[index].contact;
+  });
+};
+
+const openModal = (event: MouseEvent, index: number | null = null) => {
+  event.preventDefault();
+  if (index !== null) {
+    form.value = { ...contacts.value[index] };
+    editIndex.value = index;
+  } else {
+    form.value = { email: '', phone: '', name: '', onCall: false };
+    editIndex.value = null;
+  }
+  showModal.value = true;
+  errorMessage.value = '';
+};
+
+const saveContact = () => {
+  const e164Regex = /^\+?[1-9]\d{1,14}$/;
+  if (!e164Regex.test(form.value.phone)) {
+    errorMessage.value = 'Please enter a valid E.164 phone number.';
+    return;
+  }
+
+  if (editIndex.value !== null) {
+    contacts.value[editIndex.value] = { ...form.value };
+  } else {
+    contacts.value.push({ ...form.value });
+  }
+  showModal.value = false;
+};
+
+const deleteContact = (index: number) => {
+  contacts.value.splice(index, 1);
+};
+
+const saveSchedule = () => {
+  console.log('Schedule saved:', {
+    frequency: selectedFrequency.value,
+    timezone: selectedTimezone.value,
+    startTime: startTime.value,
+    endTime: endTime.value,
+  });
+};
+
+const cancelChanges = () => {
+  console.log('Changes cancelled');
+};
+
+onMounted(() => {});
+</script>
+
 <style scoped>
 .on-call-application {
   padding: 20px;
@@ -191,6 +228,14 @@ onMounted(() => {
   margin-right: 10px;
   padding: 10px;
   cursor: pointer;
+}
+
+.schedule-options, .action-buttons {
+  margin-top: 20px;
+}
+
+.schedule-options label, .action-buttons button {
+  margin-right: 10px;
 }
 
 table {
@@ -216,54 +261,4 @@ button {
 
 .modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 5px;
-  width: 400px;
-}
-
-.modal-content h2 {
-  margin-bottom: 20px;
-}
-
-.modal-content form {
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-content label {
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.modal-content input {
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.modal-content button {
-  padding: 10px;
-  color: white;
-  background-color: #007bff;
-  border: none;
-  border-radius: 4px;
-  margin-top: 10px;
-}
-
-.modal-content button[type="button"] {
-  background-color: #6c757d;
-}
-</style>
+  top: 0}
