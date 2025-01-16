@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import '@/assets/main.css';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 
 import type { Schema } from '../../amplify/data/resource';
 import { generateClient } from 'aws-amplify/data';
@@ -42,10 +42,15 @@ const updatePhoneNumber = (index: number) => {
   if (selectedContact) {
     onCallList.value[index].phone = selectedContact.phone;
   }
+
+  // Update onCall status
+  contacts.value.forEach(contact => {
+    contact.onCall = contact.name === onCallList.value[index].contact;
+  });
 };
 
 const openModal = (event: MouseEvent, index: number | null = null) => {
-  event.preventDefault(); // if necessary
+  event.preventDefault();
   if (index !== null) {
     form.value = { ...contacts.value[index] };
     editIndex.value = index;
@@ -57,6 +62,12 @@ const openModal = (event: MouseEvent, index: number | null = null) => {
 };
 
 const saveContact = () => {
+  const e164Regex = /^\+?[1-9]\d{1,14}$/;
+  if (!e164Regex.test(form.value.phone)) {
+    alert('Please enter a valid E.164 phone number.');
+    return;
+  }
+
   if (editIndex.value !== null) {
     contacts.value[editIndex.value] = { ...form.value };
   } else {
@@ -152,10 +163,10 @@ onMounted(() => {
           <label>Email *</label>
           <input v-model="form.email" type="email" required />
           <label>Phone Number *</label>
-          <input v-model="form.phone" required />
+          <input v-model="form.phone" required placeholder="+1234567890" />
           <label>Name *</label>
           <input v-model="form.name" required />
-          <button type="submit">CREATE CONTACT</button>
+          <button type="submit">{{ editIndex !== null ? 'UPDATE CONTACT' : 'CREATE CONTACT' }}</button>
           <button type="button" @click="showModal = false">Cancel</button>
         </form>
       </div>
