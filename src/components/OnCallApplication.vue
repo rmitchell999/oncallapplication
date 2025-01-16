@@ -1,3 +1,110 @@
 <template src="./OnCallApplication.html"></template>
-<script src="./OnCallApplication.ts" setup></script>
+
+<script setup lang="ts">
+import '@/assets/main.css';
+import { ref, onMounted } from 'vue';
+
+import type { Schema } from '../../amplify/data/resource';
+import { generateClient } from 'aws-amplify/data';
+
+const client = generateClient<Schema>();
+
+const activeTab = ref('schedule');
+const showModal = ref(false);
+const editIndex = ref<number | null>(null);
+const form = ref({ email: '', phone: '', name: '', onCall: false });
+const errorMessage = ref('');
+
+const contacts = ref([
+  { email: 'jeffrey@example.com', phone: '+31627296098', name: 'Jeffrey van de...', onCall: true },
+  { email: 'scott@example.com', phone: '+447785294418', name: 'Scott Beaton', onCall: false },
+]);
+
+const onCallList = ref([
+  { groupName: 'Terneuzen', day: 'Monday', contact: contacts.value[0].name, phone: contacts.value[0].phone },
+  { groupName: 'Terneuzen', day: 'Tuesday', contact: contacts.value[0].name, phone: contacts.value[0].phone },
+]);
+
+const generateTimeOptions = () => {
+  const times = [];
+  for (let i = 0; i < 24; i++) {
+    for (let j = 0; j += 30; j < 60) {
+      const hour = i < 10 ? `0${i}` : i;
+      const minute = j < 10 ? `0${j}` : j;
+      times.push(`${hour}:${minute}`);
+    }
+  }
+  return times;
+};
+
+const timeOptions = ref(generateTimeOptions());
+
+const frequencyOptions = ref(['Weekly', 'Fortnightly', 'Monthly']);
+const selectedFrequency = ref('Weekly');
+
+const timezoneOptions = ref(['GMT', 'EST', 'PST', 'CET']);
+const selectedTimezone = ref('GMT');
+
+const startTime = ref('');
+const endTime = ref('');
+
+const updatePhoneNumber = (index: number) => {
+  const selectedContact = contacts.value.find(contact => contact.name === onCallList.value[index].contact);
+  if (selectedContact) {
+    onCallList.value[index].phone = selectedContact.phone;
+  }
+
+  contacts.value.forEach(contact => {
+    contact.onCall = contact.name === onCallList.value[index].contact;
+  });
+};
+
+const openModal = (event: MouseEvent, index: number | null = null) => {
+  event.preventDefault();
+  if (index !== null) {
+    form.value = { ...contacts.value[index] };
+    editIndex.value = index;
+  } else {
+    form.value = { email: '', phone: '', name: '', onCall: false };
+    editIndex.value = null;
+  }
+  showModal.value = true;
+  errorMessage.value = '';
+};
+
+const saveContact = () => {
+  const e164Regex = /^\+?[1-9]\d{1,14}$/;
+  if (!e164Regex.test(form.value.phone)) {
+    errorMessage.value = 'Please enter a valid E.164 phone number.';
+    return;
+  }
+
+  if (editIndex.value !== null) {
+    contacts.value[editIndex.value] = { ...form.value };
+  } else {
+    contacts.value.push({ ...form.value });
+  }
+  showModal.value = false;
+};
+
+const deleteContact = (index: number) => {
+  contacts.value.splice(index, 1);
+};
+
+const saveSchedule = () => {
+  console.log('Schedule saved:', {
+    frequency: selectedFrequency.value,
+    timezone: selectedTimezone.value,
+    startTime: startTime.value,
+    endTime: endTime.value,
+  });
+};
+
+const cancelChanges = () => {
+  console.log('Changes cancelled');
+};
+
+onMounted(() => {});
+</script>
+
 <style src="./OnCallApplication.css" scoped></style>
