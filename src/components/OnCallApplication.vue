@@ -67,6 +67,10 @@ const openModal = (event: MouseEvent, index: number | null = null) => {
   errorMessage.value = '';
 };
 
+const saveContacts = () => {
+  localStorage.setItem('contacts', JSON.stringify(contacts.value));
+};
+
 const saveContact = () => {
   const e164Regex = /^\+?[1-9]\d{1,14}$/;
   if (!e164Regex.test(form.value.phone)) {
@@ -80,10 +84,12 @@ const saveContact = () => {
     contacts.value.push({ ...form.value });
   }
   showModal.value = false;
+  saveContacts();
 };
 
 const deleteContact = (index: number) => {
   contacts.value.splice(index, 1);
+  saveContacts();
 };
 
 const saveSchedule = () => {
@@ -107,6 +113,11 @@ const cancelChanges = () => {
 };
 
 onMounted(() => {
+  const savedContacts = localStorage.getItem('contacts');
+  if (savedContacts) {
+    contacts.value = JSON.parse(savedContacts);
+  }
+
   const savedSchedule = localStorage.getItem('schedule');
   if (savedSchedule) {
     const schedule = JSON.parse(savedSchedule);
