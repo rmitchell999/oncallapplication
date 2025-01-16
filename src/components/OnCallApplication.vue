@@ -4,7 +4,7 @@
 import '@/assets/main.css';
 import { ref, onMounted } from 'vue';
 
-const activeTab = ref('schedule');
+const activeTab = ref('monthly');
 const showModal = ref(false);
 const editIndex = ref<number | null>(null);
 const form = ref({ email: '', phone: '', name: '', onCall: false });
@@ -24,6 +24,8 @@ const onCallList = ref([
   { groupName: 'Terneuzen', day: 'Saturday', contact: '', phone: '' },
   { groupName: 'Terneuzen', day: 'Sunday', contact: '', phone: '' },
 ]);
+
+const daysInMonth = ref(Array.from({ length: 31 }, (_, i) => ({ date: i + 1, contact: '' })));
 
 const generateTimeOptions = () => {
   const times = [];
@@ -108,6 +110,10 @@ const saveSchedule = () => {
   console.log('Schedule saved:', schedule);
 };
 
+const saveMonthlySchedule = () => {
+  localStorage.setItem('monthlySchedule', JSON.stringify(daysInMonth.value));
+};
+
 const cancelChanges = () => {
   console.log('Changes cancelled');
 };
@@ -118,15 +124,4 @@ onMounted(() => {
     contacts.value = JSON.parse(savedContacts);
   }
 
-  const savedSchedule = localStorage.getItem('schedule');
-  if (savedSchedule) {
-    const schedule = JSON.parse(savedSchedule);
-    selectedFrequency.value = schedule.frequency;
-    selectedTimezone.value = schedule.timezone;
-    startTime.value = schedule.startTime;
-    onCallList.value = schedule.onCallList;
-  }
-});
-</script>
-
-<style src="./OnCallApplication.css" scoped></style>
+  const savedSchedule = local

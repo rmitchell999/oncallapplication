@@ -1,29 +1,16 @@
-<div class="on-call-application">
+<div>
     <div class="tabs">
-      <button @click="activeTab = 'schedule'">Terneuzen On-Call</button>
+      <button @click="activeTab = 'schedule'">Weekly View</button>
+      <button @click="activeTab = 'monthly'">Monthly View</button>
       <button @click="activeTab = 'contacts'">On-Call Contact List</button>
     </div>
   
     <div v-if="activeTab === 'schedule'">
-      <h1>Terneuzen On-Call</h1>
-      <div class="schedule-options">
-        <label for="frequency">Frequency:</label>
-        <select id="frequency" v-model="selectedFrequency">
-          <option v-for="option in frequencyOptions" :key="option">{{ option }}</option>
-        </select>
-  
-        <label for="timezone">Timezone:</label>
-        <select id="timezone" v-model="selectedTimezone">
-          <option v-for="option in timezoneOptions" :key="option">{{ option }}</option>
-        </select>
-  
-        <label for="start-time">Start Time/EndTime:</label>
-        <select id="start-time" v-model="startTime">
-          <option v-for="time in timeOptions" :key="time">{{ time }}</option>
-        </select>
-        
-      </div>
-  
+      <h1>Terneuzen On-Call - Weekly</h1>
+      <label for="start-time">Start Time/End Time:</label>
+      <select id="start-time" v-model="startTime">
+        <option v-for="time in timeOptions" :key="time">{{ time }}</option>
+      </select>
       <table>
         <thead>
           <tr>
@@ -48,10 +35,21 @@
           </tr>
         </tbody>
       </table>
-  
       <div class="action-buttons">
         <button @click="saveSchedule">Save</button>
         <button @click="cancelChanges">Cancel</button>
+      </div>
+    </div>
+  
+    <div v-if="activeTab === 'monthly'" class="calendar">
+      <h1>Terneuzen On-Call - Monthly</h1>
+      <div v-for="(day, index) in daysInMonth" :key="index" class="calendar-day">
+        <div>{{ day.date }}</div>
+        <select v-model="day.contact" @change="saveMonthlySchedule">
+          <option v-for="contact in contacts" :key="contact.name" :value="contact.name">
+            {{ contact.name }}
+          </option>
+        </select>
       </div>
     </div>
   
