@@ -44,7 +44,8 @@ const updatePhoneNumber = (index: number) => {
   }
 };
 
-const openModal = (index: number | null = null) => {
+const openModal = (event: MouseEvent, index: number | null = null) => {
+  event.preventDefault(); // if necessary
   if (index !== null) {
     form.value = { ...contacts.value[index] };
     editIndex.value = index;
@@ -118,7 +119,7 @@ onMounted(() => {
 
     <div v-if="activeTab === 'contacts'">
       <h1>On-Call Contact List</h1>
-      <button @click="openModal">+ ADD</button>
+      <button @click="(event) => openModal(event)">+ ADD</button>
       <table>
         <thead>
           <tr>
@@ -136,7 +137,7 @@ onMounted(() => {
             <td>{{ contact.name }}</td>
             <td>{{ contact.onCall ? 'On Call' : 'Free' }}</td>
             <td>
-              <button @click="() => openModal(index)">✏️</button>
+              <button @click="(event) => openModal(event, index)">✏️</button>
               <button @click="deleteContact(index)">🗑️</button>
             </td>
           </tr>
