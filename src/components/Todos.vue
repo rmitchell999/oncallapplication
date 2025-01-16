@@ -2,7 +2,6 @@
 import '@/assets/main.css';
 import { ref, onMounted } from 'vue';
 
-// Example Schema import and client setup
 import type { Schema } from '../../amplify/data/resource';
 import { generateClient } from 'aws-amplify/data';
 
@@ -10,15 +9,18 @@ const client = generateClient<Schema>();
 
 const activeTab = ref('schedule');
 
-const contacts = ref<Array<{ email: string; phone: string; name: string; onCall: boolean }>>([
+const showModal = ref(false);
+const editIndex = ref(null);
+const form = ref({ email: '', phone: '', name: '', onCall: false });
+
+const contacts = ref([
   { email: 'jeffrey@example.com', phone: '+31627296098', name: 'Jeffrey van de...', onCall: true },
   { email: 'scott@example.com', phone: '+447785294418', name: 'Scott Beaton', onCall: false },
 ]);
 
-const onCallList = ref<Array<{ groupName: string; day: string; contact: string; phone: string }>>([
+const onCallList = ref([
   { groupName: 'Terneuzen', day: 'Monday', contact: contacts.value[0].name, phone: contacts.value[0].phone },
   { groupName: 'Terneuzen', day: 'Tuesday', contact: contacts.value[0].name, phone: contacts.value[0].phone },
-  // Add more entries as needed
 ]);
 
 const generateTimeOptions = () => {
@@ -42,23 +44,24 @@ const updatePhoneNumber = (index: number) => {
   }
 };
 
-const addContact = () => {
-  const name = prompt('Enter name');
-  const email = prompt('Enter email');
-  const phone = prompt('Enter phone number');
-  if (name && email && phone) {
-    contacts.value.push({ name, email, phone, onCall: false });
+const openModal = (index: number | null = null) => {
+  if (index !== null) {
+    form.value = { ...contacts.value[index] };
+    editIndex.value = index;
+  } else {
+    form.value = { email: '', phone: '', name: '', onCall: false };
+    editIndex.value = null;
   }
+  showModal.value = true;
 };
 
-const editContact = (index: number) => {
-  const contact = contacts.value[index];
-  const name = prompt('Edit name', contact.name);
-  const email = prompt('Edit email', contact.email);
-  const phone = prompt('Edit phone number', contact.phone);
-  if (name && email && phone) {
-    contacts.value[index] = { ...contact, name, email, phone };
+const saveContact = () => {
+  if (editIndex.value !== null) {
+    contacts.value[editIndex.value] = { ...form.value };
+  } else {
+    contacts.value.push({ ...form.value });
   }
+  showModal.value = false;
 };
 
 const deleteContact = (index: number) => {
@@ -69,7 +72,6 @@ onMounted(() => {
   // Example data fetching logic
   // listOnCallSchedule();
 });
-
 </script>
 
 <template>
@@ -116,7 +118,7 @@ onMounted(() => {
 
     <div v-if="activeTab === 'contacts'">
       <h1>On-Call Contact List</h1>
-      <button @click="addContact">+ ADD</button>
+      <button @click="openModal">+ ADD</button>
       <table>
         <thead>
           <tr>
@@ -134,12 +136,28 @@ onMounted(() => {
             <td>{{ contact.name }}</td>
             <td>{{ contact.onCall ? 'On Call' : 'Free' }}</td>
             <td>
-              <button @click="editContact(index)">✏️</button>
+              <button @click="openModal(index)">✏️</button>
               <button @click="deleteContact(index)">🗑️</button>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <div v-if="showModal" class="modal">
+      <div class="modal-content">
+        <h2>{{ editIndex !== null ? 'Edit Contact' : 'Create New Contact' }}</h2>
+        <form @submit.prevent="saveContact">
+          <label>Email *</label>
+          <input v-model="form.email" type="email" required />
+          <label>Phone Number *</label>
+          <input v-model="form.phone" required />
+          <label>Name *</label>
+          <input v-model="form.name" required />
+          <button type="submit">CREATE CONTACT</button>
+          <button type="button" @click="showModal = false">Cancel</button>
+        </form>
+      </div>
     </div>
   </div>
 </template>
@@ -179,5 +197,58 @@ select {
 
 button {
   cursor: pointer;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 400px;
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-content label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.modal-content input {
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-content button {
+  padding: 10px;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.modal-content button[type="button"] {
+  background-color: #6c757d;
 }
 </style>
