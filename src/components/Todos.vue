@@ -10,7 +10,7 @@ const client = generateClient<Schema>();
 const activeTab = ref('schedule');
 
 const showModal = ref(false);
-const editIndex = ref(null);
+const editIndex = ref<number | null>(null);
 const form = ref({ email: '', phone: '', name: '', onCall: false });
 
 const contacts = ref([
