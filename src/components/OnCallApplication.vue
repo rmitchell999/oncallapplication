@@ -87,6 +87,11 @@ const deleteContact = (index: number) => {
 };
 
 const saveSchedule = () => {
+  const confirmation = confirm('You are about to change the on-call schedule. Please confirm or cancel.');
+  if (!confirmation) {
+    return;
+  }
+  
   const schedule = {
     frequency: selectedFrequency.value,
     timezone: selectedTimezone.value,

@@ -17,15 +17,11 @@
           <option v-for="option in timezoneOptions" :key="option">{{ option }}</option>
         </select>
   
-        <label for="start-time">Start Time:</label>
+        <label for="start-time">Start Time/EndTime:</label>
         <select id="start-time" v-model="startTime">
           <option v-for="time in timeOptions" :key="time">{{ time }}</option>
         </select>
-  
-        <label for="end-time">End Time:</label>
-        <select id="end-time" v-model="endTime">
-          <option v-for="time in timeOptions" :key="time">{{ time }}</option>
-        </select>
+        
       </div>
   
       <table>
