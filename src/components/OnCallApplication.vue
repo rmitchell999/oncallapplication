@@ -2,12 +2,10 @@
 
 <script setup lang="ts">
 import '@/assets/main.css';
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 
-import type { Schema } from '../../amplify/data/resource';
-import { generateClient } from 'aws-amplify/data';
-
-const client = generateClient<Schema>();
+// Mocked client generation (replace with actual implementation if needed)
+const client = {};
 
 const activeTab = ref('schedule');
 const showModal = ref(false);
@@ -28,7 +26,7 @@ const onCallList = ref([
 const generateTimeOptions = () => {
   const times = [];
   for (let i = 0; i < 24; i++) {
-    for (let j = 0; j += 30; j < 60) {
+    for (let j = 0; j < 60; j += 30) {
       const hour = i < 10 ? `0${i}` : i;
       const minute = j < 10 ? `0${j}` : j;
       times.push(`${hour}:${minute}`);
@@ -39,7 +37,7 @@ const generateTimeOptions = () => {
 
 const timeOptions = ref(generateTimeOptions());
 
-const frequencyOptions = ref(['Weekly', 'Fortnightly', 'Monthly']);
+const frequencyOptions = ref(['Weekly']);
 const selectedFrequency = ref('Weekly');
 
 const timezoneOptions = ref(['GMT', 'EST', 'PST', 'CET']);
@@ -103,8 +101,6 @@ const saveSchedule = () => {
 const cancelChanges = () => {
   console.log('Changes cancelled');
 };
-
-onMounted(() => {});
 </script>
 
 <style src="./OnCallApplication.css" scoped></style>
