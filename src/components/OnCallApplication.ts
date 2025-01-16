@@ -56,16 +56,28 @@ const updatePhoneNumber = (index: number) => {
   });
 };
 
+/**
+ * Opens the modal for adding or editing a contact.
+ * If an index is provided, it loads the contact data into the form for editing.
+ * Otherwise, it initializes the form with empty values for adding a new contact.
+ * 
+ * @param event - The mouse event that triggered the modal opening.
+ * @param index - The index of the contact to edit, or null to add a new contact.
+ */
 const openModal = (event: MouseEvent, index: number | null = null) => {
   event.preventDefault();
   if (index !== null) {
+    // Load the contact data into the form for editing
     form.value = { ...contacts.value[index] };
     editIndex.value = index;
   } else {
+    // Initialize the form with empty values for adding a new contact
     form.value = { email: '', phone: '', name: '', onCall: false };
     editIndex.value = null;
   }
+  // Show the modal
   showModal.value = true;
+  // Clear any previous error messages
   errorMessage.value = '';
 };
 

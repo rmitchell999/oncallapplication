@@ -4,7 +4,7 @@ import OnCallApplication from './components/OnCallApplication.vue'
 
 <template>
   <main>
-    <OnCallApplication />
+    <OnCallApplication/>
   </main>
 </template>
 
