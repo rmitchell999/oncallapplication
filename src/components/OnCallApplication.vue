@@ -2,10 +2,7 @@
 
 <script setup lang="ts">
 import '@/assets/main.css';
-import { ref } from 'vue';
-
-// Mocked client generation (replace with actual implementation if needed)
-const client = {};
+import { ref, onMounted } from 'vue';
 
 const activeTab = ref('schedule');
 const showModal = ref(false);
@@ -19,8 +16,13 @@ const contacts = ref([
 ]);
 
 const onCallList = ref([
-  { groupName: 'Terneuzen', day: 'Monday', contact: contacts.value[0].name, phone: contacts.value[0].phone },
-  { groupName: 'Terneuzen', day: 'Tuesday', contact: contacts.value[0].name, phone: contacts.value[0].phone },
+  { groupName: 'Terneuzen', day: 'Monday', contact: '', phone: '' },
+  { groupName: 'Terneuzen', day: 'Tuesday', contact: '', phone: '' },
+  { groupName: 'Terneuzen', day: 'Wednesday', contact: '', phone: '' },
+  { groupName: 'Terneuzen', day: 'Thursday', contact: '', phone: '' },
+  { groupName: 'Terneuzen', day: 'Friday', contact: '', phone: '' },
+  { groupName: 'Terneuzen', day: 'Saturday', contact: '', phone: '' },
+  { groupName: 'Terneuzen', day: 'Sunday', contact: '', phone: '' },
 ]);
 
 const generateTimeOptions = () => {
@@ -44,17 +46,12 @@ const timezoneOptions = ref(['GMT', 'EST', 'PST', 'CET']);
 const selectedTimezone = ref('GMT');
 
 const startTime = ref('');
-const endTime = ref('');
 
 const updatePhoneNumber = (index: number) => {
   const selectedContact = contacts.value.find(contact => contact.name === onCallList.value[index].contact);
   if (selectedContact) {
     onCallList.value[index].phone = selectedContact.phone;
   }
-
-  contacts.value.forEach(contact => {
-    contact.onCall = contact.name === onCallList.value[index].contact;
-  });
 };
 
 const openModal = (event: MouseEvent, index: number | null = null) => {
@@ -90,17 +87,30 @@ const deleteContact = (index: number) => {
 };
 
 const saveSchedule = () => {
-  console.log('Schedule saved:', {
+  const schedule = {
     frequency: selectedFrequency.value,
     timezone: selectedTimezone.value,
     startTime: startTime.value,
-    endTime: endTime.value,
-  });
+    onCallList: onCallList.value,
+  };
+  localStorage.setItem('schedule', JSON.stringify(schedule));
+  console.log('Schedule saved:', schedule);
 };
 
 const cancelChanges = () => {
   console.log('Changes cancelled');
 };
+
+onMounted(() => {
+  const savedSchedule = localStorage.getItem('schedule');
+  if (savedSchedule) {
+    const schedule = JSON.parse(savedSchedule);
+    selectedFrequency.value = schedule.frequency;
+    selectedTimezone.value = schedule.timezone;
+    startTime.value = schedule.startTime;
+    onCallList.value = schedule.onCallList;
+  }
+});
 </script>
 
 <style src="./OnCallApplication.css" scoped></style>
