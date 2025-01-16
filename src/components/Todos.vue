@@ -136,7 +136,7 @@ onMounted(() => {
             <td>{{ contact.name }}</td>
             <td>{{ contact.onCall ? 'On Call' : 'Free' }}</td>
             <td>
-              <button @click="openModal(index)">✏️</button>
+              <button @click="() => openModal(index)">✏️</button>
               <button @click="deleteContact(index)">🗑️</button>
             </td>
           </tr>
