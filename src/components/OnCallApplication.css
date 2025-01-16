@@ -1,0 +1,96 @@
+.on-call-application {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .tabs {
+    margin-bottom: 20px;
+  }
+  
+  .tabs button {
+    margin-right: 10px;
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .schedule-options, .action-buttons {
+    margin-top: 20px;
+  }
+  
+  .schedule-options label, .action-buttons button {
+    margin-right: 10px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  select {
+    padding: 5px;
+    width: 100%;
+  }
+  
+  button {
+    cursor: pointer;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 400px;
+  }
+  
+  .modal-content h2 {
+    margin-bottom: 20px;
+  }
+  
+  .modal-content form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modal-content label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .modal-content input {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .modal-content button {
+    padding: 10px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    margin-top: 10px;
+  }
+  
+  .modal-content button[type="button"] {
+    background-color: #6c757d;
+  }

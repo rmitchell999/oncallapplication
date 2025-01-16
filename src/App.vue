@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Todos from './components/Todos.vue'
+import OnCallApplication from './components/OnCallApplication.vue'
 </script>
 
 <template>
   <main>
-    <Todos />
+    <OnCallApplication />
   </main>
 </template>
 

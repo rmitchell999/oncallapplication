@@ -1,0 +1,106 @@
+<div class="on-call-application">
+    <div class="tabs">
+      <button @click="activeTab = 'schedule'">Terneuzen On-Call</button>
+      <button @click="activeTab = 'contacts'">On-Call Contact List</button>
+    </div>
+  
+    <div v-if="activeTab === 'schedule'">
+      <h1>Terneuzen On-Call</h1>
+      <div class="schedule-options">
+        <label for="frequency">Frequency:</label>
+        <select id="frequency" v-model="selectedFrequency">
+          <option v-for="option in frequencyOptions" :key="option">{{ option }}</option>
+        </select>
+  
+        <label for="timezone">Timezone:</label>
+        <select id="timezone" v-model="selectedTimezone">
+          <option v-for="option in timezoneOptions" :key="option">{{ option }}</option>
+        </select>
+  
+        <label for="start-time">Start Time:</label>
+        <select id="start-time" v-model="startTime">
+          <option v-for="time in timeOptions" :key="time">{{ time }}</option>
+        </select>
+  
+        <label for="end-time">End Time:</label>
+        <select id="end-time" v-model="endTime">
+          <option v-for="time in timeOptions" :key="time">{{ time }}</option>
+        </select>
+      </div>
+  
+      <table>
+        <thead>
+          <tr>
+            <th>On-Call Group Name</th>
+            <th>Day of Week</th>
+            <th>On-Call Contact Selected</th>
+            <th>Phone Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(entry, index) in onCallList" :key="index">
+            <td>{{ entry.groupName }}</td>
+            <td>{{ entry.day }}</td>
+            <td>
+              <select v-model="entry.contact" @change="updatePhoneNumber(index)">
+                <option v-for="contact in contacts" :key="contact.name" :value="contact.name">
+                  {{ contact.name }}
+                </option>
+              </select>
+            </td>
+            <td>{{ entry.phone }}</td>
+          </tr>
+        </tbody>
+      </table>
+  
+      <div class="action-buttons">
+        <button @click="saveSchedule">Save</button>
+        <button @click="cancelChanges">Cancel</button>
+      </div>
+    </div>
+  
+    <div v-if="activeTab === 'contacts'">
+      <h1>On-Call Contact List</h1>
+      <button @click="(event) => openModal(event)">+ ADD</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Email Address</th>
+            <th>Phone Number</th>
+            <th>Name</th>
+            <th>Currently On-Call</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(contact, index) in contacts" :key="index">
+            <td>{{ contact.email }}</td>
+            <td>{{ contact.phone }}</td>
+            <td>{{ contact.name }}</td>
+            <td>{{ contact.onCall ? 'On Call' : 'Free' }}</td>
+            <td>
+              <button @click="(event) => openModal(event, index)">✏️</button>
+              <button @click="deleteContact(index)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <div v-if="showModal" class="modal">
+      <div class="modal-content">
+        <h2>{{ editIndex !== null ? 'Edit Contact' : 'Create New Contact' }}</h2>
+        <form @submit.prevent="saveContact">
+          <label>Email *</label>
+          <input v-model="form.email" type="email" required />
+          <label>Phone Number *</label>
+          <input v-model="form.phone" required placeholder="+1234567890" />
+          <label>Name *</label>
+          <input v-model="form.name" required />
+          <p style="color: red;">{{ errorMessage }}</p>
+          <button type="submit">{{ editIndex !== null ? 'UPDATE CONTACT' : 'CREATE CONTACT' }}</button>
+          <button type="button" @click="showModal = false">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
