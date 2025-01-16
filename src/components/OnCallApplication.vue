@@ -1,4 +1,105 @@
-<template src="./OnCallApplication.html"></template>
+<template>
+  <div>
+    <div class="tabs">
+      <button @click="activeTab = 'schedule'">Weekly View</button>
+      <button @click="activeTab = 'monthly'">Monthly View</button>
+      <button @click="activeTab = 'contacts'">On-Call Contact List</button>
+    </div>
+
+    <div v-if="activeTab === 'schedule'">
+      <h1>Terneuzen On-Call - Weekly</h1>
+      <label for="start-time">Start Time/End Time:</label>
+      <select id="start-time" v-model="startTime">
+        <option v-for="time in timeOptions" :key="time">{{ time }}</option>
+      </select>
+      <table>
+        <thead>
+          <tr>
+            <th>On-Call Group Name</th>
+            <th>Day of Week</th>
+            <th>On-Call Contact Selected</th>
+            <th>Phone Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(entry, index) in onCallList" :key="index">
+            <td>{{ entry.groupName }}</td>
+            <td>{{ entry.day }}</td>
+            <td>
+              <select v-model="entry.contact" @change="updatePhoneNumber(index)">
+                <option v-for="contact in contacts" :key="contact.name" :value="contact.name">
+                  {{ contact.name }}
+                </option>
+              </select>
+            </td>
+            <td>{{ entry.phone }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="action-buttons">
+        <button @click="saveSchedule">Save</button>
+        <button @click="cancelChanges">Cancel</button>
+      </div>
+    </div>
+
+    <div v-if="activeTab === 'monthly'" class="calendar">
+      <h1>Terneuzen On-Call - Monthly</h1>
+      <div v-for="(day, index) in daysInMonth" :key="index" class="calendar-day">
+        <div>{{ day.date }}</div>
+        <select v-model="day.contact" @change="saveMonthlySchedule">
+          <option v-for="contact in contacts" :key="contact.name" :value="contact.name">
+            {{ contact.name }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div v-if="activeTab === 'contacts'">
+      <h1>On-Call Contact List</h1>
+      <button @click="(event) => openModal(event)">+ ADD</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Email Address</th>
+            <th>Phone Number</th>
+            <th>Name</th>
+            <th>Currently On-Call</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(contact, index) in contacts" :key="index">
+            <td>{{ contact.email }}</td>
+            <td>{{ contact.phone }}</td>
+            <td>{{ contact.name }}</td>
+            <td>{{ contact.onCall ? 'On Call' : 'Free' }}</td>
+            <td>
+              <button @click="(event) => openModal(event, index)">✏️</button>
+              <button @click="deleteContact(index)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div v-if="showModal" class="modal">
+      <div class="modal-content">
+        <h2>{{ editIndex !== null ? 'Edit Contact' : 'Create New Contact' }}</h2>
+        <form @submit.prevent="saveContact">
+          <label>Email *</label>
+          <input v-model="form.email" type="email" required />
+          <label>Phone Number *</label>
+          <input v-model="form.phone" required placeholder="+1234567890" />
+          <label>Name *</label>
+          <input v-model="form.name" required />
+          <p style="color: red;">{{ errorMessage }}</p>
+          <button type="submit">{{ editIndex !== null ? 'UPDATE CONTACT' : 'CREATE CONTACT' }}</button>
+          <button type="button" @click="showModal = false">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
 
 <script setup lang="ts">
 import '@/assets/main.css';
@@ -72,7 +173,6 @@ const openModal = (event: MouseEvent, index: number | null = null) => {
 const saveContacts = () => {
   localStorage.setItem('contacts', JSON.stringify(contacts.value));
 };
-
 const saveContact = () => {
   const e164Regex = /^\+?[1-9]\d{1,14}$/;
   if (!e164Regex.test(form.value.phone)) {
@@ -124,4 +224,17 @@ onMounted(() => {
     contacts.value = JSON.parse(savedContacts);
   }
 
-  const savedSchedule = local
+  const savedSchedule = localStorage.getItem('schedule');
+  if (savedSchedule) {
+    const parsedSchedule = JSON.parse(savedSchedule);
+    selectedFrequency.value = parsedSchedule.frequency;
+    selectedTimezone.value = parsedSchedule.timezone;
+    startTime.value = parsedSchedule.startTime;
+    onCallList.value = parsedSchedule.onCallList;
+  }
+
+  const savedMonthlySchedule = localStorage.getItem('monthlySchedule');
+  if (savedMonthlySchedule) {
+    daysInMonth.value = JSON.parse(savedMonthlySchedule);
+  }
+});
