@@ -21,7 +21,6 @@
         <select id="start-time" v-model="startTime">
           <option v-for="time in timeOptions" :key="time">{{ time }}</option>
         </select>
-        
       </div>
   
       <table>
@@ -77,3 +76,27 @@
             <td>{{ contact.onCall ? 'On Call' : 'Free' }}</td>
             <td>
               <button @click="(event) => openModal(event, index)">✏️</button>
+              <button @click="deleteContact(index)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <div v-if="showModal" class="modal">
+      <div class="modal-content">
+        <h2>{{ editIndex !== null ? 'Edit Contact' : 'Create New Contact' }}</h2>
+        <form @submit.prevent="saveContact">
+          <label>Email *</label>
+          <input v-model="form.email" type="email" required />
+          <label>Phone Number *</label>
+          <input v-model="form.phone" required placeholder="+1234567890" />
+          <label>Name *</label>
+          <input v-model="form.name" required />
+          <p style="color: red;">{{ errorMessage }}</p>
+          <button type="submit">{{ editIndex !== null ? 'UPDATE CONTACT' : 'CREATE CONTACT' }}</button>
+          <button type="button" @click="showModal = false">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
