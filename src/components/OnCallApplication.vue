@@ -1,7 +1,7 @@
 <template src="./OnCallApplication.html"></template>
 <script setup lang="ts">
 import '@/assets/main.css';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 
 const activeTab = ref('schedule');
@@ -129,11 +129,10 @@ onMounted(() => {
   }
 });
 
-watch(selectedFrequency, (newFrequency) => {
+watch(selectedFrequency, (newFrequency: string) => {
   if (newFrequency === 'Monthly') {
     generateMonthlyCalendar();
   } else {
-    // Reset onCallList for weekly or other frequency views
     onCallList.value = [
       { groupName: 'Terneuzen', day: 'Monday', contact: '', phone: '' },
       { groupName: 'Terneuzen', day: 'Tuesday', contact: '', phone: '' },
