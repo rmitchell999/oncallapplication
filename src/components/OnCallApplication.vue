@@ -85,29 +85,29 @@ const deleteContact = (index: number) => {
   saveContacts();
 };
 
-const generateMonthlyCalendar = () => {
-  const now = new Date();
-  const start = startOfMonth(now);
-  const end = endOfMonth(now);
-  const days = eachDayOfInterval({ start, end });
-  onCallList.value = days.map(day => ({
-    groupName: 'Terneuzen',
-    day: format(day, 'yyyy-MM-dd'),
-    contact: '',
-    phone: ''
-  }));
-};
-
-const generateWeeklyCalendar = () => {
-  const now = new Date();
-  const start = startOfWeek(now, { weekStartsOn: 1 });
-  const days = Array.from({ length: 7 }).map((_, i) => addDays(start, i));
-  onCallList.value = days.map(day => ({
-    groupName: 'Terneuzen',
-    day: format(day, 'yyyy-MM-dd'),
-    contact: '',
-    phone: ''
-  }));
+const generateCalendar = (frequency: string) => {
+  if (frequency === 'Monthly') {
+    const now = new Date();
+    const start = startOfMonth(now);
+    const end = endOfMonth(now);
+    const days = eachDayOfInterval({ start, end });
+    onCallList.value = days.map(day => ({
+      groupName: 'Terneuzen',
+      day: format(day, 'yyyy-MM-dd'),
+      contact: '',
+      phone: ''
+    }));
+  } else {
+    const now = new Date();
+    const start = startOfWeek(now, { weekStartsOn: 1 });
+    const days = Array.from({ length: 7 }).map((_, i) => addDays(start, i));
+    onCallList.value = days.map(day => ({
+      groupName: 'Terneuzen',
+      day: format(day, 'yyyy-MM-dd'),
+      contact: '',
+      phone: ''
+    }));
+  }
 };
 
 const saveSchedule = () => {
@@ -131,17 +131,18 @@ const loadSchedule = () => {
     selectedFrequency.value = schedule.frequency;
     selectedTimezone.value = schedule.timezone;
     startTime.value = schedule.startTime;
-    onCallList.value = schedule.onCallList.map((entry: OnCallEntry) => ({
-      ...entry,
-      contact: entry.contact || '',
-      phone: entry.phone || '',
-    }));
+
+    // Ensure onCallList matches the current calendar
+    generateCalendar(selectedFrequency.value);
+    onCallList.value.forEach(entry => {
+      const savedEntry = schedule.onCallList.find((e: OnCallEntry) => e.day === entry.day);
+      if (savedEntry) {
+        entry.contact = savedEntry.contact;
+        entry.phone = savedEntry.phone;
+      }
+    });
   } else {
-    if (selectedFrequency.value === 'Monthly') {
-      generateMonthlyCalendar();
-    } else {
-      generateWeeklyCalendar();
-    }
+    generateCalendar(selectedFrequency.value);
   }
 };
 
@@ -154,11 +155,8 @@ onMounted(() => {
 });
 
 watch(selectedFrequency, (newFrequency: string) => {
-  if (newFrequency === 'Monthly') {
-    generateMonthlyCalendar();
-  } else {
-    generateWeeklyCalendar();
-  }
+  generateCalendar(newFrequency);
+  loadSchedule();
 });
 </script>
 <style src="./OnCallApplication.css" scoped></style>
