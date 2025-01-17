@@ -12,12 +12,15 @@
   },
   "dependencies": {
     "aws-amplify": "^6.6.6",
+    "date-fns": "^4.1.0",
+    "moment-timezone": "^0.5.46",
     "vue": "^3.4.21"
   },
   "devDependencies": {
     "@aws-amplify/backend": "^1.5.0",
     "@aws-amplify/backend-cli": "^1.2.9",
     "@tsconfig/node20": "^20.1.4",
+    "@types/moment-timezone": "^0.5.13",
     "@types/node": "^20.12.5",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/tsconfig": "^0.5.1",
@@ -29,6 +32,6 @@
     "tsx": "^4.7.2",
     "typescript": "^5.4.5",
     "vite": "^5.4.10",
-    "vue-tsc": "^2.0.11"
+    "vue-tsc": "^2.2.0"
   }
 }
