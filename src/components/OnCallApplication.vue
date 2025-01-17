@@ -103,6 +103,9 @@ const generateWeeklyCalendar = () => {
 };
 
 const saveSchedule = () => {
+  const confirmation = confirm('Are you sure you want to save these changes?');
+  if (!confirmation) return;
+
   const schedule = {
     frequency: selectedFrequency.value,
     timezone: selectedTimezone.value,
@@ -122,10 +125,6 @@ const loadSchedule = () => {
     startTime.value = schedule.startTime;
     onCallList.value = schedule.onCallList;
   }
-};
-
-const cancelChanges = () => {
-  console.log('Changes cancelled');
 };
 
 onMounted(() => {
