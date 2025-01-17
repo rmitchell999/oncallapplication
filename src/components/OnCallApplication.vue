@@ -4,6 +4,14 @@ import '@/assets/main.css';
 import { ref, onMounted, watch } from 'vue';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, addDays } from 'date-fns';
 
+// Define an interface for the on-call entry
+interface OnCallEntry {
+  groupName: string;
+  day: string;
+  contact: string;
+  phone: string;
+}
+
 const activeTab = ref('schedule');
 const showModal = ref(false);
 const editIndex = ref<number | null>(null);
@@ -13,8 +21,8 @@ const contacts = ref([
   { email: 'jeffrey@example.com', phone: '+31627296098', name: 'Jeffrey van de...', onCall: true },
   { email: 'scott@example.com', phone: '+447785294418', name: 'Scott Beaton', onCall: false },
 ]);
-const onCallList = ref<any[]>([]);
-const currentDateList = ref<any[]>([]);
+const onCallList = ref<OnCallEntry[]>([]);
+const currentDateList = ref<string[]>([]);
 const timeOptions = ref(generateTimeOptions());
 const frequencyOptions = ref(['Weekly', 'Monthly']);
 const selectedFrequency = ref('Monthly');
@@ -129,7 +137,7 @@ const loadSchedule = () => {
     selectedFrequency.value = schedule.frequency;
     selectedTimezone.value = schedule.timezone;
     startTime.value = schedule.startTime;
-    onCallList.value = schedule.onCallList.map(entry => ({
+    onCallList.value = schedule.onCallList.map((entry: OnCallEntry) => ({
       ...entry,
       contact: entry.contact || '',
       phone: entry.phone || '',
