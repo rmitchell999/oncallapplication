@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted } from 'vue';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, setMonth } from 'date-fns';
 
 // Define an interface for the on-call entry
 interface OnCallEntry {
@@ -26,6 +26,11 @@ const timeOptions = ref(generateTimeOptions());
 const timezoneOptions = ref(['GMT', 'EST', 'PST', 'CET']);
 const selectedTimezone = ref('GMT');
 const startTime = ref('');
+const months = ref([
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+]);
+const selectedMonth = ref(new Date().getMonth());
 
 function generateTimeOptions() {
   const times = [];
@@ -85,8 +90,8 @@ const deleteContact = (index: number) => {
 
 const generateCalendar = () => {
   const now = new Date();
-  const start = startOfMonth(now);
-  const end = endOfMonth(now);
+  const start = startOfMonth(setMonth(now, selectedMonth.value));
+  const end = endOfMonth(start);
   const days = eachDayOfInterval({ start, end });
   onCallList.value = days.map(day => ({
     groupName: 'Terneuzen',
@@ -102,6 +107,7 @@ const saveSchedule = () => {
   if (!confirmation) return;
 
   const schedule = {
+    month: selectedMonth.value,
     timezone: selectedTimezone.value,
     startTime: startTime.value,
     onCallList: onCallList.value,
@@ -114,6 +120,7 @@ const loadSchedule = () => {
   const savedSchedule = localStorage.getItem('schedule');
   if (savedSchedule) {
     const schedule = JSON.parse(savedSchedule);
+    selectedMonth.value = schedule.month;
     selectedTimezone.value = schedule.timezone;
     startTime.value = schedule.startTime;
 
@@ -132,6 +139,10 @@ onMounted(() => {
   if (savedContacts) {
     contacts.value = JSON.parse(savedContacts);
   }
+  generateCalendar();
+});
+
+watch(selectedMonth, () => {
   generateCalendar();
 });
 </script>
