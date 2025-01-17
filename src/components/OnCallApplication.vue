@@ -93,7 +93,7 @@ const generateCalendar = () => {
     const days = eachDayOfInterval({ start, end });
     onCallList.value = days.map(day => ({
       groupName: 'Terneuzen',
-      day: format(day, 'EEEE yyyy-MM-dd'), // Include day of the week
+      day: format(day, 'EEEE yyyy-MM-dd'),
       contact: '',
       phone: ''
     }));
@@ -102,12 +102,12 @@ const generateCalendar = () => {
     const days = Array.from({ length: 7 }).map((_, i) => addDays(start, i));
     onCallList.value = days.map(day => ({
       groupName: 'Terneuzen',
-      day: format(day, 'EEEE yyyy-MM-dd'), // Include day of the week
+      day: format(day, 'EEEE yyyy-MM-dd'),
       contact: '',
       phone: ''
     }));
   }
-  loadSchedule(); // Ensure data is populated after generating the calendar
+  loadSchedule();
 };
 
 const saveSchedule = () => {
