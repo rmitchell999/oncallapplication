@@ -1,8 +1,6 @@
-<template src="./OnCallApplication.html"></template>
 <script setup lang="ts">
-import '@/assets/main.css';
 import { ref, onMounted, watch } from 'vue';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, addDays } from 'date-fns';
 
 const activeTab = ref('schedule');
 const showModal = ref(false);
@@ -14,8 +12,14 @@ const contacts = ref([
   { email: 'scott@example.com', phone: '+447785294418', name: 'Scott Beaton', onCall: false },
 ]);
 const onCallList = ref<any[]>([]);
+const timeOptions = ref(generateTimeOptions());
+const frequencyOptions = ref(['Weekly', 'Monthly']);
+const selectedFrequency = ref('Monthly');
+const timezoneOptions = ref(['GMT', 'EST', 'PST', 'CET']);
+const selectedTimezone = ref('GMT');
+const startTime = ref('');
 
-const generateTimeOptions = () => {
+function generateTimeOptions() {
   const times = [];
   for (let i = 0; i < 24; i++) {
     for (let j = 0; j < 60; j += 30) {
@@ -25,13 +29,7 @@ const generateTimeOptions = () => {
     }
   }
   return times;
-};
-const timeOptions = ref(generateTimeOptions());
-const frequencyOptions = ref(['Weekly', 'Monthly']);
-const selectedFrequency = ref('Monthly');
-const timezoneOptions = ref(['GMT', 'EST', 'PST', 'CET']);
-const selectedTimezone = ref('GMT');
-const startTime = ref('');
+}
 
 const updatePhoneNumber = (index: number) => {
   const selectedContact = contacts.value.find(contact => contact.name === onCallList.value[index].contact);
@@ -90,12 +88,19 @@ const generateMonthlyCalendar = () => {
   }));
 };
 
-const saveSchedule = () => {
-  const confirmation = confirm('You are about to change the on-call schedule. Please confirm or cancel.');
-  if (!confirmation) {
-    return;
-  }
+const generateWeeklyCalendar = () => {
+  const now = new Date();
+  const start = startOfWeek(now, { weekStartsOn: 1 });
+  const days = Array.from({ length: 7 }).map((_, i) => addDays(start, i));
+  onCallList.value = days.map(day => ({
+    groupName: 'Terneuzen',
+    day: format(day, 'yyyy-MM-dd'),
+    contact: '',
+    phone: ''
+  }));
+};
 
+const saveSchedule = () => {
   const schedule = {
     frequency: selectedFrequency.value,
     timezone: selectedTimezone.value,
@@ -106,15 +111,7 @@ const saveSchedule = () => {
   console.log('Schedule saved:', schedule);
 };
 
-const cancelChanges = () => {
-  console.log('Changes cancelled');
-};
-
-onMounted(() => {
-  const savedContacts = localStorage.getItem('contacts');
-  if (savedContacts) {
-    contacts.value = JSON.parse(savedContacts);
-  }
+const loadSchedule = () => {
   const savedSchedule = localStorage.getItem('schedule');
   if (savedSchedule) {
     const schedule = JSON.parse(savedSchedule);
@@ -123,9 +120,19 @@ onMounted(() => {
     startTime.value = schedule.startTime;
     onCallList.value = schedule.onCallList;
   }
+};
+
+onMounted(() => {
+  const savedContacts = localStorage.getItem('contacts');
+  if (savedContacts) {
+    contacts.value = JSON.parse(savedContacts);
+  }
+  loadSchedule();
 
   if (selectedFrequency.value === 'Monthly') {
     generateMonthlyCalendar();
+  } else {
+    generateWeeklyCalendar();
   }
 });
 
@@ -133,16 +140,7 @@ watch(selectedFrequency, (newFrequency: string) => {
   if (newFrequency === 'Monthly') {
     generateMonthlyCalendar();
   } else {
-    onCallList.value = [
-      { groupName: 'Terneuzen', day: 'Monday', contact: '', phone: '' },
-      { groupName: 'Terneuzen', day: 'Tuesday', contact: '', phone: '' },
-      { groupName: 'Terneuzen', day: 'Wednesday', contact: '', phone: '' },
-      { groupName: 'Terneuzen', day: 'Thursday', contact: '', phone: '' },
-      { groupName: 'Terneuzen', day: 'Friday', contact: '', phone: '' },
-      { groupName: 'Terneuzen', day: 'Saturday', contact: '', phone: '' },
-      { groupName: 'Terneuzen', day: 'Sunday', contact: '', phone: '' },
-    ];
+    generateWeeklyCalendar();
   }
 });
 </script>
-<style src="./OnCallApplication.css" scoped></style>
