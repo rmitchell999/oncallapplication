@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted, watch } from 'vue';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, addDays } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, addDays, isSameMonth } from 'date-fns';
 
 // Define an interface for the on-call entry
 interface OnCallEntry {
@@ -86,8 +86,8 @@ const deleteContact = (index: number) => {
 };
 
 const generateCalendar = () => {
+  const now = new Date();
   if (selectedFrequency.value === 'Monthly') {
-    const now = new Date();
     const start = startOfMonth(now);
     const end = endOfMonth(now);
     const days = eachDayOfInterval({ start, end });
@@ -98,7 +98,6 @@ const generateCalendar = () => {
       phone: ''
     }));
   } else {
-    const now = new Date();
     const start = startOfWeek(now, { weekStartsOn: 1 });
     const days = Array.from({ length: 7 }).map((_, i) => addDays(start, i));
     onCallList.value = days.map(day => ({
@@ -108,7 +107,7 @@ const generateCalendar = () => {
       phone: ''
     }));
   }
-  loadSchedule(); // Ensure the schedule is loaded after generating the calendar
+  loadSchedule();
 };
 
 const saveSchedule = () => {
