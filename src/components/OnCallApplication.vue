@@ -85,9 +85,9 @@ const deleteContact = (index: number) => {
   saveContacts();
 };
 
-const generateCalendar = () => {
+const generateCalendar = (frequency: string) => {
   const now = new Date();
-  if (selectedFrequency.value === 'Monthly') {
+  if (frequency === 'Monthly') {
     const start = startOfMonth(now);
     const end = endOfMonth(now);
     const days = eachDayOfInterval({ start, end });
@@ -125,13 +125,13 @@ const saveSchedule = () => {
 
 const loadSchedule = () => {
   const savedSchedule = localStorage.getItem('schedule');
-  generateCalendar(); // Ensure calendar is generated before matching
-
   if (savedSchedule) {
     const schedule = JSON.parse(savedSchedule);
     selectedFrequency.value = schedule.frequency;
     selectedTimezone.value = schedule.timezone;
     startTime.value = schedule.startTime;
+
+    generateCalendar(schedule.frequency);
 
     onCallList.value.forEach(entry => {
       const savedEntry = schedule.onCallList.find((e: OnCallEntry) => e.day === entry.day);
@@ -140,6 +140,8 @@ const loadSchedule = () => {
         entry.phone = savedEntry.phone;
       }
     });
+  } else {
+    generateCalendar(selectedFrequency.value);
   }
 };
 
@@ -151,8 +153,8 @@ onMounted(() => {
   loadSchedule();
 });
 
-watch(selectedFrequency, () => {
-  generateCalendar();
+watch(selectedFrequency, (newFrequency) => {
+  generateCalendar(newFrequency);
 });
 </script>
 <style src="./OnCallApplication.css" scoped></style>
