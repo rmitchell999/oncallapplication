@@ -131,7 +131,17 @@ const loadSchedule = () => {
     selectedFrequency.value = schedule.frequency;
     selectedTimezone.value = schedule.timezone;
     startTime.value = schedule.startTime;
-    onCallList.value = schedule.onCallList;
+    onCallList.value = schedule.onCallList.map((entry: OnCallEntry) => ({
+      ...entry,
+      contact: entry.contact || '',
+      phone: entry.phone || '',
+    }));
+  } else {
+    if (selectedFrequency.value === 'Monthly') {
+      generateMonthlyCalendar();
+    } else {
+      generateWeeklyCalendar();
+    }
   }
 };
 
@@ -141,12 +151,6 @@ onMounted(() => {
     contacts.value = JSON.parse(savedContacts);
   }
   loadSchedule();
-
-  if (selectedFrequency.value === 'Monthly') {
-    generateMonthlyCalendar();
-  } else {
-    generateWeeklyCalendar();
-  }
 });
 
 watch(selectedFrequency, (newFrequency: string) => {
