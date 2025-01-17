@@ -1,4 +1,3 @@
-
 .on-call-application {
     padding: 20px;
     font-family: Arial, sans-serif;
@@ -94,4 +93,19 @@
   
   .modal-content button[type="button"] {
     background-color: #6c757d;
+  }
+  
+  /* Calendar Styles */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
+  
+  .calendar-day {
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #fff;
+    text-align: center;
+    min-height: 100px;
   }

@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted, watch } from 'vue';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from 'date-fns';
 
 const activeTab = ref('schedule');
 const showModal = ref(false);
@@ -28,7 +28,7 @@ const generateTimeOptions = () => {
 };
 const timeOptions = ref(generateTimeOptions());
 const frequencyOptions = ref(['Weekly', 'Monthly']);
-const selectedFrequency = ref('Weekly');
+const selectedFrequency = ref('Monthly');
 const timezoneOptions = ref(['GMT', 'EST', 'PST', 'CET']);
 const selectedTimezone = ref('GMT');
 const startTime = ref('');

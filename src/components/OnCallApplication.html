@@ -23,31 +23,17 @@
         </select>
       </div>
   
-      <table>
-        <thead>
-          <tr>
-            <th>On-Call Group Name</th>
-            <th v-if="selectedFrequency === 'Weekly'">Day of Week</th>
-            <th v-if="selectedFrequency === 'Monthly'">Date</th>
-            <th>On-Call Contact Selected</th>
-            <th>Phone Number</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(entry, index) in onCallList" :key="index">
-            <td>{{ entry.groupName }}</td>
-            <td>{{ entry.day }}</td>
-            <td>
-              <select v-model="entry.contact" @change="updatePhoneNumber(index)">
-                <option v-for="contact in contacts" :key="contact.name" :value="contact.name">
-                  {{ contact.name }}
-                </option>
-              </select>
-            </td>
-            <td>{{ entry.phone }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="calendar-grid">
+        <div v-for="(entry, index) in onCallList" :key="index" class="calendar-day">
+          <div>{{ entry.day }}</div>
+          <select v-model="entry.contact" @change="updatePhoneNumber(index)">
+            <option v-for="contact in contacts" :key="contact.name" :value="contact.name">
+              {{ contact.name }}
+            </option>
+          </select>
+          <div>{{ entry.phone }}</div>
+        </div>
+      </div>
   
       <div class="action-buttons">
         <button @click="saveSchedule">Save</button>
