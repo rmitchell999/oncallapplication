@@ -1,3 +1,4 @@
+
 <div class="on-call-application">
     <div class="tabs">
       <button @click="activeTab = 'schedule'">Terneuzen On-Call</button>
@@ -7,11 +8,6 @@
     <div v-if="activeTab === 'schedule'">
       <h1>Terneuzen On-Call</h1>
       <div class="schedule-options">
-        <label for="month">Month:</label>
-        <select id="month" v-model="selectedMonth">
-          <option v-for="(month, index) in months" :key="index" :value="index">{{ month }}</option>
-        </select>
-  
         <label for="timezone">Timezone:</label>
         <select id="timezone" v-model="selectedTimezone">
           <option v-for="option in timezoneOptions" :key="option">{{ option }}</option>
