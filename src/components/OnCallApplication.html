@@ -7,11 +7,6 @@
     <div v-if="activeTab === 'schedule'">
       <h1>Terneuzen On-Call</h1>
       <div class="schedule-options">
-        <label for="frequency">Frequency:</label>
-        <select id="frequency" v-model="selectedFrequency">
-          <option v-for="option in frequencyOptions" :key="option">{{ option }}</option>
-        </select>
-  
         <label for="timezone">Timezone:</label>
         <select id="timezone" v-model="selectedTimezone">
           <option v-for="option in timezoneOptions" :key="option">{{ option }}</option>

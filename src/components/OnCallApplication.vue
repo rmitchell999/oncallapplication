@@ -1,8 +1,8 @@
 <template src="./OnCallApplication.html"></template>
 <script setup lang="ts">
 import '@/assets/main.css';
-import { ref, onMounted, watch } from 'vue';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, addDays } from 'date-fns';
+import { ref, onMounted } from 'vue';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 
 // Define an interface for the on-call entry
 interface OnCallEntry {
@@ -23,8 +23,6 @@ const contacts = ref([
 ]);
 const onCallList = ref<OnCallEntry[]>([]);
 const timeOptions = ref(generateTimeOptions());
-const frequencyOptions = ref(['Weekly', 'Monthly']);
-const selectedFrequency = ref('Monthly');
 const timezoneOptions = ref(['GMT', 'EST', 'PST', 'CET']);
 const selectedTimezone = ref('GMT');
 const startTime = ref('');
@@ -87,26 +85,15 @@ const deleteContact = (index: number) => {
 
 const generateCalendar = () => {
   const now = new Date();
-  if (selectedFrequency.value === 'Monthly') {
-    const start = startOfMonth(now);
-    const end = endOfMonth(now);
-    const days = eachDayOfInterval({ start, end });
-    onCallList.value = days.map(day => ({
-      groupName: 'Terneuzen',
-      day: format(day, 'EEEE yyyy-MM-dd'),
-      contact: '',
-      phone: ''
-    }));
-  } else {
-    const start = startOfWeek(now, { weekStartsOn: 1 });
-    const days = Array.from({ length: 7 }).map((_, i) => addDays(start, i));
-    onCallList.value = days.map(day => ({
-      groupName: 'Terneuzen',
-      day: format(day, 'EEEE yyyy-MM-dd'),
-      contact: '',
-      phone: ''
-    }));
-  }
+  const start = startOfMonth(now);
+  const end = endOfMonth(now);
+  const days = eachDayOfInterval({ start, end });
+  onCallList.value = days.map(day => ({
+    groupName: 'Terneuzen',
+    day: format(day, 'EEEE yyyy-MM-dd'),
+    contact: '',
+    phone: ''
+  }));
   loadSchedule();
 };
 
@@ -115,7 +102,6 @@ const saveSchedule = () => {
   if (!confirmation) return;
 
   const schedule = {
-    frequency: selectedFrequency.value,
     timezone: selectedTimezone.value,
     startTime: startTime.value,
     onCallList: onCallList.value,
@@ -128,7 +114,6 @@ const loadSchedule = () => {
   const savedSchedule = localStorage.getItem('schedule');
   if (savedSchedule) {
     const schedule = JSON.parse(savedSchedule);
-    selectedFrequency.value = schedule.frequency;
     selectedTimezone.value = schedule.timezone;
     startTime.value = schedule.startTime;
 
@@ -147,10 +132,6 @@ onMounted(() => {
   if (savedContacts) {
     contacts.value = JSON.parse(savedContacts);
   }
-  generateCalendar();
-});
-
-watch(selectedFrequency, () => {
   generateCalendar();
 });
 </script>

@@ -1,14 +1,14 @@
 .on-call-application {
     padding: 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f4f9;
+    background-color: #f0f0f5; /* Slightly off-white */
     color: #333;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Align content to start */
-    padding-top: 40px; /* Add some space at the top */
+    justify-content: flex-start;
+    padding-top: 40px;
   }
   
   .tabs {
@@ -37,8 +37,7 @@
     background-color: #0056b3;
   }
   
-  .schedule-options,
-  .action-buttons {
+  .schedule-options {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -46,13 +45,17 @@
     margin: 20px 0;
   }
   
-  .schedule-options label,
-  .action-buttons button {
-    margin-right: 20px; /* Increase spacing */
+  .schedule-options label {
+    margin-right: 5px; /* Decrease space between label and dropdown */
   }
   
-  select,
-  button {
+  .schedule-options .group {
+    display: flex;
+    align-items: center;
+    margin-right: 30px; /* Increase space between groups */
+  }
+  
+  select {
     padding: 8px 12px;
     border-radius: 5px;
     border: 1px solid #ccc;
@@ -62,7 +65,7 @@
   }
   
   button {
-    color: #000; /* Black text for buttons */
+    color: #000;
   }
   
   button:hover {
