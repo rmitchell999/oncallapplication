@@ -1,4 +1,6 @@
+<template src="./OnCallApplication.html"></template>
 <script setup lang="ts">
+import '@/assets/main.css';
 import { ref, onMounted, watch } from 'vue';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, addDays } from 'date-fns';
 
@@ -122,6 +124,10 @@ const loadSchedule = () => {
   }
 };
 
+const cancelChanges = () => {
+  console.log('Changes cancelled');
+};
+
 onMounted(() => {
   const savedContacts = localStorage.getItem('contacts');
   if (savedContacts) {
@@ -144,3 +150,4 @@ watch(selectedFrequency, (newFrequency: string) => {
   }
 });
 </script>
+<style src="./OnCallApplication.css" scoped></style>
