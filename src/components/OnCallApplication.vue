@@ -1,10 +1,9 @@
 <template src="./OnCallApplication.html"></template>
 <script setup lang="ts">
 import '@/assets/main.css';
-import { ref, onMounted, watch } from 'vue'; // Add 'watch' here
+import { ref, onMounted, watch } from 'vue';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, setMonth } from 'date-fns';
 
-// Define an interface for the on-call entry
 interface OnCallEntry {
   groupName: string;
   day: string;
@@ -17,27 +16,35 @@ const showModal = ref(false);
 const editIndex = ref<number | null>(null);
 const form = ref({ email: '', phone: '', name: '', onCall: false });
 const errorMessage = ref('');
-const contacts = ref([
-  { email: 'jeffrey@example.com', phone: '+31627296098', name: 'Jeffrey van de...', onCall: true },
-  { email: 'scott@example.com', phone: '+447785294418', name: 'Scott Beaton', onCall: false },
-]);
+const contacts = ref(getInitialContacts());
 const onCallList = ref<OnCallEntry[]>([]);
 const timeOptions = ref(generateTimeOptions());
 const timezoneOptions = ref(['GMT', 'EST', 'PST', 'CET']);
 const selectedTimezone = ref('GMT');
 const startTime = ref('');
-const months = ref([
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
-]);
+const months = ref(getMonths());
 const selectedMonth = ref(new Date().getMonth());
+
+function getInitialContacts() {
+  return [
+    { email: 'jeffrey@example.com', phone: '+31627296098', name: 'Jeffrey van de...', onCall: true },
+    { email: 'scott@example.com', phone: '+447785294418', name: 'Scott Beaton', onCall: false },
+  ];
+}
+
+function getMonths() {
+  return [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+}
 
 function generateTimeOptions() {
   const times = [];
   for (let i = 0; i < 24; i++) {
     for (let j = 0; j < 60; j += 30) {
-      const hour = i < 10 ? `0${i}` : i;
-      const minute = j < 10 ? `0${j}` : j;
+      const hour = i.toString().padStart(2, '0');
+      const minute = j.toString().padStart(2, '0');
       times.push(`${hour}:${minute}`);
     }
   }
@@ -69,8 +76,7 @@ const saveContacts = () => {
 };
 
 const saveContact = () => {
-  const e164Regex = /^\+?[1-9]\d{1,14}$/;
-  if (!e164Regex.test(form.value.phone)) {
+  if (!/^\+?[1-9]\d{1,14}$/.test(form.value.phone)) {
     errorMessage.value = 'Please enter a valid E.164 phone number.';
     return;
   }
@@ -103,8 +109,7 @@ const generateCalendar = () => {
 };
 
 const saveSchedule = () => {
-  const confirmation = confirm('Are you sure you want to save these changes?');
-  if (!confirmation) return;
+  if (!confirm('Are you sure you want to save these changes?')) return;
 
   const schedule = {
     month: selectedMonth.value,
@@ -113,7 +118,6 @@ const saveSchedule = () => {
     onCallList: onCallList.value,
   };
   localStorage.setItem('schedule', JSON.stringify(schedule));
-  console.log('Schedule saved:', schedule);
 };
 
 const loadSchedule = () => {
@@ -142,8 +146,5 @@ onMounted(() => {
   generateCalendar();
 });
 
-watch(selectedMonth, () => {
-  generateCalendar();
-});
+watch(selectedMonth, generateCalendar);
 </script>
-<style src="./OnCallApplication.css" scoped></style>
