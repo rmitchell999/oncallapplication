@@ -4,16 +4,21 @@
     background-color: #f4f4f9;
     color: #333;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
   
   .tabs {
     margin-bottom: 20px;
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
+    width: 100%;
   }
   
   .tabs button {
-    margin-right: 15px;
+    margin: 0 10px;
     padding: 10px 15px;
     border: none;
     background-color: #007bff;
@@ -34,8 +39,9 @@
   .schedule-options,
   .action-buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    width: 100%;
     margin: 20px 0;
   }
   
@@ -52,6 +58,10 @@
     background-color: #fff;
     cursor: pointer;
     transition: background-color 0.3s;
+  }
+  
+  button {
+    color: #000; /* Black text for buttons */
   }
   
   button:hover {
