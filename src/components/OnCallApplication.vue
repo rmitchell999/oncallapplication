@@ -22,7 +22,6 @@ const contacts = ref([
   { email: 'scott@example.com', phone: '+447785294418', name: 'Scott Beaton', onCall: false },
 ]);
 const onCallList = ref<OnCallEntry[]>([]);
-const currentDateList = ref<string[]>([]);
 const timeOptions = ref(generateTimeOptions());
 const frequencyOptions = ref(['Weekly', 'Monthly']);
 const selectedFrequency = ref('Monthly');
@@ -97,7 +96,6 @@ const generateMonthlyCalendar = () => {
     contact: '',
     phone: ''
   }));
-  currentDateList.value = days.map(day => format(day, 'yyyy-MM-dd'));
 };
 
 const generateWeeklyCalendar = () => {
@@ -110,21 +108,17 @@ const generateWeeklyCalendar = () => {
     contact: '',
     phone: ''
   }));
-  currentDateList.value = days.map(day => format(day, 'yyyy-MM-dd'));
 };
 
 const saveSchedule = () => {
-  const confirmation = confirm('Are you sure you want to confirm this save?');
+  const confirmation = confirm('Are you sure you want to save these changes?');
   if (!confirmation) return;
 
   const schedule = {
     frequency: selectedFrequency.value,
     timezone: selectedTimezone.value,
     startTime: startTime.value,
-    onCallList: onCallList.value.map((entry, index) => ({
-      ...entry,
-      day: currentDateList.value[index],
-    })),
+    onCallList: onCallList.value,
   };
   localStorage.setItem('schedule', JSON.stringify(schedule));
   console.log('Schedule saved:', schedule);
@@ -137,11 +131,7 @@ const loadSchedule = () => {
     selectedFrequency.value = schedule.frequency;
     selectedTimezone.value = schedule.timezone;
     startTime.value = schedule.startTime;
-    onCallList.value = schedule.onCallList.map((entry: OnCallEntry) => ({
-      ...entry,
-      contact: entry.contact || '',
-      phone: entry.phone || '',
-    }));
+    onCallList.value = schedule.onCallList;
   }
 };
 
