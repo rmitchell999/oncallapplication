@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted, watch } from 'vue';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, addDays } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, addDays, getDay } from 'date-fns';
 
 // Define an interface for the on-call entry
 interface OnCallEntry {
@@ -93,7 +93,7 @@ const generateCalendar = (frequency: string) => {
     const days = eachDayOfInterval({ start, end });
     onCallList.value = days.map(day => ({
       groupName: 'Terneuzen',
-      day: format(day, 'yyyy-MM-dd'),
+      day: format(day, 'EEEE yyyy-MM-dd'), // Include day of the week
       contact: '',
       phone: ''
     }));
@@ -103,7 +103,7 @@ const generateCalendar = (frequency: string) => {
     const days = Array.from({ length: 7 }).map((_, i) => addDays(start, i));
     onCallList.value = days.map(day => ({
       groupName: 'Terneuzen',
-      day: format(day, 'yyyy-MM-dd'),
+      day: format(day, 'EEEE yyyy-MM-dd'), // Include day of the week
       contact: '',
       phone: ''
     }));
