@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted, watch } from 'vue';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, addDays, isSameMonth } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, addDays } from 'date-fns';
 
 // Define an interface for the on-call entry
 interface OnCallEntry {
@@ -107,7 +107,7 @@ const generateCalendar = () => {
       phone: ''
     }));
   }
-  loadSchedule();
+  loadSchedule(); // Ensure data is populated after generating the calendar
 };
 
 const saveSchedule = () => {
