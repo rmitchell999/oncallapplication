@@ -85,9 +85,9 @@ const deleteContact = (index: number) => {
   saveContacts();
 };
 
-const generateCalendar = (frequency: string) => {
-  const now = new Date();
-  if (frequency === 'Monthly') {
+const generateCalendar = () => {
+  if (selectedFrequency.value === 'Monthly') {
+    const now = new Date();
     const start = startOfMonth(now);
     const end = endOfMonth(now);
     const days = eachDayOfInterval({ start, end });
@@ -98,6 +98,7 @@ const generateCalendar = (frequency: string) => {
       phone: ''
     }));
   } else {
+    const now = new Date();
     const start = startOfWeek(now, { weekStartsOn: 1 });
     const days = Array.from({ length: 7 }).map((_, i) => addDays(start, i));
     onCallList.value = days.map(day => ({
@@ -131,7 +132,7 @@ const loadSchedule = () => {
     selectedTimezone.value = schedule.timezone;
     startTime.value = schedule.startTime;
 
-    generateCalendar(schedule.frequency);
+    generateCalendar();
 
     onCallList.value.forEach(entry => {
       const savedEntry = schedule.onCallList.find((e: OnCallEntry) => e.day === entry.day);
@@ -141,7 +142,7 @@ const loadSchedule = () => {
       }
     });
   } else {
-    generateCalendar(selectedFrequency.value);
+    generateCalendar();
   }
 };
 
@@ -153,8 +154,8 @@ onMounted(() => {
   loadSchedule();
 });
 
-watch(selectedFrequency, (newFrequency) => {
-  generateCalendar(newFrequency);
+watch(selectedFrequency, () => {
+  generateCalendar();
 });
 </script>
 <style src="./OnCallApplication.css" scoped></style>
