@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted, watch } from 'vue';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, addDays, getDay } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, addDays } from 'date-fns';
 
 // Define an interface for the on-call entry
 interface OnCallEntry {
@@ -85,8 +85,8 @@ const deleteContact = (index: number) => {
   saveContacts();
 };
 
-const generateCalendar = (frequency: string) => {
-  if (frequency === 'Monthly') {
+const generateCalendar = () => {
+  if (selectedFrequency.value === 'Monthly') {
     const now = new Date();
     const start = startOfMonth(now);
     const end = endOfMonth(now);
@@ -132,8 +132,8 @@ const loadSchedule = () => {
     selectedTimezone.value = schedule.timezone;
     startTime.value = schedule.startTime;
 
-    // Ensure onCallList matches the current calendar
-    generateCalendar(selectedFrequency.value);
+    generateCalendar();
+
     onCallList.value.forEach(entry => {
       const savedEntry = schedule.onCallList.find((e: OnCallEntry) => e.day === entry.day);
       if (savedEntry) {
@@ -142,7 +142,7 @@ const loadSchedule = () => {
       }
     });
   } else {
-    generateCalendar(selectedFrequency.value);
+    generateCalendar();
   }
 };
 
@@ -154,8 +154,8 @@ onMounted(() => {
   loadSchedule();
 });
 
-watch(selectedFrequency, (newFrequency: string) => {
-  generateCalendar(newFrequency);
+watch(selectedFrequency, () => {
+  generateCalendar();
   loadSchedule();
 });
 </script>
