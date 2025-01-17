@@ -108,6 +108,7 @@ const generateCalendar = () => {
       phone: ''
     }));
   }
+  loadSchedule(); // Ensure the schedule is loaded after generating the calendar
 };
 
 const saveSchedule = () => {
@@ -132,8 +133,6 @@ const loadSchedule = () => {
     selectedTimezone.value = schedule.timezone;
     startTime.value = schedule.startTime;
 
-    generateCalendar();
-
     onCallList.value.forEach(entry => {
       const savedEntry = schedule.onCallList.find((e: OnCallEntry) => e.day === entry.day);
       if (savedEntry) {
@@ -141,8 +140,6 @@ const loadSchedule = () => {
         entry.phone = savedEntry.phone;
       }
     });
-  } else {
-    generateCalendar();
   }
 };
 
@@ -151,7 +148,7 @@ onMounted(() => {
   if (savedContacts) {
     contacts.value = JSON.parse(savedContacts);
   }
-  loadSchedule();
+  generateCalendar();
 });
 
 watch(selectedFrequency, () => {
