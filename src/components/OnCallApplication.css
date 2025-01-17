@@ -1,45 +1,88 @@
 .on-call-application {
     padding: 20px;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    min-height: 100vh;
   }
   
   .tabs {
     margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-start;
   }
   
   .tabs button {
-    margin-right: 10px;
-    padding: 10px;
+    margin-right: 15px;
+    padding: 10px 15px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
   }
   
-  .schedule-options, .action-buttons {
-    margin-top: 20px;
+  .tabs button.active {
+    background-color: #0056b3;
   }
   
-  .schedule-options label, .action-buttons button {
+  .tabs button:hover {
+    background-color: #0056b3;
+  }
+  
+  .schedule-options,
+  .action-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+  }
+  
+  .schedule-options label,
+  .action-buttons button {
     margin-right: 10px;
   }
   
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  th, td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  select {
-    padding: 5px;
-    width: 100%;
-  }
-  
+  select,
   button {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff;
     cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #e9ecef;
+  }
+  
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    max-width: 100%;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .calendar-day {
+    padding: 10px;
+    background-color: #e9ecef;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .calendar-day:last-child {
+    border-right: none;
   }
   
   .modal {
@@ -59,6 +102,7 @@
     padding: 20px;
     border-radius: 5px;
     width: 400px;
+    color: #333;
   }
   
   .modal-content h2 {
@@ -93,19 +137,4 @@
   
   .modal-content button[type="button"] {
     background-color: #6c757d;
-  }
-  
-  /* Calendar Styles */
-  .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-  }
-  
-  .calendar-day {
-    border: 1px solid #ddd;
-    padding: 10px;
-    background-color: #fff;
-    text-align: center;
-    min-height: 100px;
   }
