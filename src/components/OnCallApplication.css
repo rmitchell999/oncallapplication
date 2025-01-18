@@ -45,14 +45,13 @@
     margin: 20px 0;
   }
   
-  .schedule-options label {
-    margin-right: 5px;
-  }
-  
-  .schedule-options .group {
+  .option-group {
     display: flex;
     align-items: center;
-    margin-right: 30px;
+  }
+  
+  .option-group label {
+    margin-right: 5px;
   }
   
   select {

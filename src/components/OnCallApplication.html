@@ -7,15 +7,33 @@
     <div v-if="activeTab === 'schedule'">
       <h1>Terneuzen On-Call</h1>
       <div class="schedule-options">
-        <label for="timezone">Timezone:</label>
-        <select id="timezone" v-model="selectedTimezone">
-          <option v-for="option in timezoneOptions" :key="option">{{ option }}</option>
-        </select>
+        <div class="option-group">
+          <label for="month">Month:</label>
+          <select id="month" v-model="selectedMonth" @change="generateCalendar">
+            <option v-for="(month, index) in months" :value="index" :key="month">{{ month }}</option>
+          </select>
+        </div>
   
-        <label for="start-time">Start Time/EndTime:</label>
-        <select id="start-time" v-model="startTime">
-          <option v-for="time in timeOptions" :key="time">{{ time }}</option>
-        </select>
+        <div class="option-group">
+          <label for="year">Year:</label>
+          <select id="year" v-model="selectedYear" @change="generateCalendar">
+            <option v-for="year in years" :key="year">{{ year }}</option>
+          </select>
+        </div>
+  
+        <div class="option-group">
+          <label for="timezone">Timezone:</label>
+          <select id="timezone" v-model="selectedTimezone">
+            <option v-for="option in timezoneOptions" :key="option">{{ option }}</option>
+          </select>
+        </div>
+  
+        <div class="option-group">
+          <label for="start-time">Start Time/EndTime:</label>
+          <select id="start-time" v-model="startTime">
+            <option v-for="time in timeOptions" :key="time">{{ time }}</option>
+          </select>
+        </div>
       </div>
   
       <div class="calendar-grid">
@@ -68,15 +86,4 @@
         <h2>{{ editIndex !== null ? 'Edit Contact' : 'Create New Contact' }}</h2>
         <form @submit.prevent="saveContact">
           <label>Email *</label>
-          <input v-model="form.email" type="email" required />
-          <label>Phone Number *</label>
-          <input v-model="form.phone" required placeholder="+11234567890" />
-          <label>Name *</label>
-          <input v-model="form.name" required />
-          <p style="color: red;">{{ errorMessage }}</p>
-          <button type="submit">{{ editIndex !== null ? 'UPDATE CONTACT' : 'CREATE CONTACT' }}</button>
-          <button type="button" @click="showModal = false">Cancel</button>
-        </form>
-      </div>
-    </div>
-  </div>
+          <input v-model="form

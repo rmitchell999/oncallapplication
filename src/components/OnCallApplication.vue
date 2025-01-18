@@ -1,10 +1,8 @@
-<template src="./OnCallApplication.html"></template>
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted } from 'vue';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 
-// Define an interface for the on-call entry
 interface OnCallEntry {
   groupName: string;
   day: string;
@@ -26,6 +24,8 @@ const timeOptions = ref(generateTimeOptions());
 const timezoneOptions = ref(['GMT', 'EST', 'PST', 'CET']);
 const selectedTimezone = ref('GMT');
 const startTime = ref('');
+const selectedMonth = ref(new Date().getMonth());
+const selectedYear = ref(new Date().getFullYear());
 
 function generateTimeOptions() {
   const times = [];
@@ -84,7 +84,7 @@ const deleteContact = (index: number) => {
 };
 
 const generateCalendar = () => {
-  const now = new Date();
+  const now = new Date(selectedYear.value, selectedMonth.value);
   const start = startOfMonth(now);
   const end = endOfMonth(now);
   const days = eachDayOfInterval({ start, end });
@@ -105,12 +105,12 @@ const saveSchedule = () => {
     startTime: startTime.value,
     onCallList: onCallList.value,
   };
-  localStorage.setItem('schedule', JSON.stringify(schedule));
+  localStorage.setItem(`schedule-${selectedYear.value}-${selectedMonth.value}`, JSON.stringify(schedule));
   console.log('Schedule saved:', schedule);
 };
 
 const loadSchedule = () => {
-  const savedSchedule = localStorage.getItem('schedule');
+  const savedSchedule = localStorage.getItem(`schedule-${selectedYear.value}-${selectedMonth.value}`);
   if (savedSchedule) {
     const schedule = JSON.parse(savedSchedule);
     selectedTimezone.value = schedule.timezone;
@@ -125,6 +125,9 @@ const loadSchedule = () => {
   }
 };
 
+const months = Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('default', { month: 'long' }));
+const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
+
 onMounted(() => {
   const savedContacts = localStorage.getItem('contacts');
   if (savedContacts) {
@@ -133,4 +136,3 @@ onMounted(() => {
   generateCalendar();
 });
 </script>
-<style src="./OnCallApplication.css" scoped></style>
