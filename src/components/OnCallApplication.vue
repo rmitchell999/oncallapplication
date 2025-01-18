@@ -1,3 +1,4 @@
+<template src="./OnCallApplication.html"></template>
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted } from 'vue';
@@ -136,3 +137,4 @@ onMounted(() => {
   generateCalendar();
 });
 </script>
+<style src="./OnCallApplication.css" scoped></style>

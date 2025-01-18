@@ -86,4 +86,15 @@
         <h2>{{ editIndex !== null ? 'Edit Contact' : 'Create New Contact' }}</h2>
         <form @submit.prevent="saveContact">
           <label>Email *</label>
-          <input v-model="form
+          <input v-model="form.email" type="email" required />
+          <label>Phone Number *</label>
+          <input v-model="form.phone" required placeholder="+11234567890" />
+          <label>Name *</label>
+          <input v-model="form.name" required />
+          <p style="color: red;">{{ errorMessage }}</p>
+          <button type="submit">{{ editIndex !== null ? 'UPDATE CONTACT' : 'CREATE CONTACT' }}</button>
+          <button type="button" @click="showModal = false">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
