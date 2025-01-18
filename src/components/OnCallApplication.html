@@ -1,4 +1,3 @@
-
 <div class="on-call-application">
     <div class="tabs">
       <button @click="activeTab = 'schedule'">Terneuzen On-Call</button>
@@ -20,7 +19,7 @@
       </div>
   
       <div class="calendar-grid">
-        <div v-for="(entry, index) in onCallList" :key="index" class="calendar-day">
+        <div v-for="(entry, index) in onCallList" :key="index" class="calendar-day" :class="{ 'highlighted': entry.contact !== '' }">
           <div>{{ entry.day }}</div>
           <select v-model="entry.contact" @change="updatePhoneNumber(index)">
             <option v-for="contact in contacts" :key="contact.name" :value="contact.name">

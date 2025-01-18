@@ -1,9 +1,9 @@
-
 <template src="./OnCallApplication.html"></template>
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted } from 'vue';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
+
 // Define an interface for the on-call entry
 interface OnCallEntry {
   groupName: string;
@@ -11,6 +11,7 @@ interface OnCallEntry {
   contact: string;
   phone: string;
 }
+
 const activeTab = ref('schedule');
 const showModal = ref(false);
 const editIndex = ref<number | null>(null);
@@ -25,6 +26,7 @@ const timeOptions = ref(generateTimeOptions());
 const timezoneOptions = ref(['GMT', 'EST', 'PST', 'CET']);
 const selectedTimezone = ref('GMT');
 const startTime = ref('');
+
 function generateTimeOptions() {
   const times = [];
   for (let i = 0; i < 24; i++) {
@@ -36,12 +38,14 @@ function generateTimeOptions() {
   }
   return times;
 }
+
 const updatePhoneNumber = (index: number) => {
   const selectedContact = contacts.value.find(contact => contact.name === onCallList.value[index].contact);
   if (selectedContact) {
     onCallList.value[index].phone = selectedContact.phone;
   }
 };
+
 const openModal = (event: MouseEvent, index: number | null = null) => {
   event.preventDefault();
   if (index !== null) {
@@ -54,9 +58,11 @@ const openModal = (event: MouseEvent, index: number | null = null) => {
   showModal.value = true;
   errorMessage.value = '';
 };
+
 const saveContacts = () => {
   localStorage.setItem('contacts', JSON.stringify(contacts.value));
 };
+
 const saveContact = () => {
   const e164Regex = /^\+?[1-9]\d{1,14}$/;
   if (!e164Regex.test(form.value.phone)) {
@@ -71,10 +77,12 @@ const saveContact = () => {
   showModal.value = false;
   saveContacts();
 };
+
 const deleteContact = (index: number) => {
   contacts.value.splice(index, 1);
   saveContacts();
 };
+
 const generateCalendar = () => {
   const now = new Date();
   const start = startOfMonth(now);
@@ -82,12 +90,13 @@ const generateCalendar = () => {
   const days = eachDayOfInterval({ start, end });
   onCallList.value = days.map(day => ({
     groupName: 'Terneuzen',
-    day: format(day, 'EEEE yyyy-MM-dd'),
+    day: format(day, 'EEEE dd-MM-yyyy'),
     contact: '',
     phone: ''
   }));
   loadSchedule();
 };
+
 const saveSchedule = () => {
   const confirmation = confirm('Are you sure you want to save these changes?');
   if (!confirmation) return;
@@ -99,6 +108,7 @@ const saveSchedule = () => {
   localStorage.setItem('schedule', JSON.stringify(schedule));
   console.log('Schedule saved:', schedule);
 };
+
 const loadSchedule = () => {
   const savedSchedule = localStorage.getItem('schedule');
   if (savedSchedule) {
@@ -114,6 +124,7 @@ const loadSchedule = () => {
     });
   }
 };
+
 onMounted(() => {
   const savedContacts = localStorage.getItem('contacts');
   if (savedContacts) {
