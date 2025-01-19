@@ -2,7 +2,6 @@
 
 <script setup lang="ts">
 import { Auth } from 'aws-amplify';
-import { AmplifyAuthenticator, AmplifySignIn } from '@aws-amplify/ui-vue';
 import '@/assets/main.css';
 import { ref, onMounted } from 'vue';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
@@ -30,7 +29,6 @@ const selectedTimezone = ref('GMT');
 const startTime = ref('');
 const selectedMonth = ref(new Date().getMonth());
 const selectedYear = ref(new Date().getFullYear());
-const user = computed(() => Auth.currentAuthenticatedUser().then(user => user).catch(() => null));
 
 function generateTimeOptions() {
   const times = [];
