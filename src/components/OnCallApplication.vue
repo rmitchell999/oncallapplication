@@ -3,7 +3,7 @@
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted } from 'vue';
-import { Auth } from 'aws-amplify';
+import { Auth } from 'aws-amplify/auth';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 
 interface OnCallEntry {
