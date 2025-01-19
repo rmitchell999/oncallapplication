@@ -4,7 +4,7 @@
 import { Auth } from 'aws-amplify';
 import { AmplifyAuthenticator, AmplifySignIn } from '@aws-amplify/ui-vue';
 import '@/assets/main.css';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 
 interface OnCallEntry {
@@ -102,70 +102,19 @@ const generateCalendar = () => {
   loadSchedule();
 };
 
-const saveSchedule = async () => {
+const saveSchedule = () => {
   const confirmation = confirm('Are you sure you want to save these changes?');
   if (!confirmation) return;
-
-  const hasAdminRole = await checkIfUserHasAdminRole();
-
-  if (!hasAdminRole) {
-    alert("You do not have permission to save the schedule.");
-    return;
-  }
-
-  try {
-    const schedule = {
-      timezone: selectedTimezone.value,
-      startTime: startTime.value,
-      onCallList: onCallList.value,
-    };
-
-    const response = await saveScheduleToBackendAPI(schedule);
-
-    if (response.ok) {
-      alert("Schedule saved successfully!");
-    } else {
-      alert(`Error saving schedule: ${response.statusText}`);
-    }
-  } catch (error) {
-    console.error("Error saving schedule:", error);
-    alert("An error occurred while saving the schedule.");
-  }
-};
-
-
-const checkIfUserHasAdminRole = async () => {
-  try {
-    const cognitoUser = await Auth.currentAuthenticatedUser();
-    const groups = cognitoUser.signInUserSession.accessToken.payload['cognito:groups'];
-    return groups.includes('TerneuzenAdmin');
-  } catch (error) {
-    console.error('Error checking user role:', error);
-    return false;
-  }
-};
-
-const saveScheduleToBackendAPI = async (scheduleData) => {
-  try {
-    const response = await fetch('/api/saveSchedule', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(scheduleData),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response;
-  } catch (error) {
-    console.error("Error saving schedule to backend:", error);
-    return { ok: false, statusText: error.message };
-  }
+  const schedule = {
+    timezone: selectedTimezone.value,
+    startTime: startTime.value,
+    onCallList: onCallList.value,
+  };
+  localStorage.setItem(`schedule-${selectedYear.value}-${selectedMonth.value}`, JSON.stringify(schedule));
+  console.log('Schedule saved:', schedule);
 };
 
 const loadSchedule = () => {
-  //This is a placeholder, it should be removed or replaced by an API call to load the schedule
   const savedSchedule = localStorage.getItem(`schedule-${selectedYear.value}-${selectedMonth.value}`);
   if (savedSchedule) {
     const schedule = JSON.parse(savedSchedule);

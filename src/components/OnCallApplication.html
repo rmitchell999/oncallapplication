@@ -1,17 +1,8 @@
 <div class="on-call-application">
-    <div v-if="!user">
-        <AmplifyAuthenticator>
-          <template #authenticator>
-            <p>Log in to access the on-call schedule.</p>
-            <AmplifySignIn />
-          </template>
-        </AmplifyAuthenticator>
-      </div>
-      <div v-else>
-        <div class="tabs">
-          <button @click="activeTab = 'schedule'">Terneuzen On-Call</button>
-          <button @click="activeTab = 'contacts'">On-Call Contact List</button>
-        </div>
+    <div class="tabs">
+        <button @click="activeTab = 'schedule'">Terneuzen On-Call</button>
+        <button @click="activeTab = 'contacts'">On-Call Contact List</button>
+    </div>
 
     <div v-if="activeTab === 'schedule'">
         <h1>Terneuzen On-Call</h1>
