@@ -3,8 +3,7 @@
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted } from 'vue';
-import Amplify from 'aws-amplify';
-import { Auth } from 'aws-amplify';
+import { Amplify, Auth } from 'aws-amplify';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 
 interface OnCallEntry {
@@ -111,6 +110,19 @@ const saveSchedule = () => {
   localStorage.setItem(`schedule-${selectedYear.value}-${selectedMonth.value}`, JSON.stringify(schedule));
   console.log('Schedule saved:', schedule);
 };
+const generateCalendar = () => {
+  const now = new Date(selectedYear.value, selectedMonth.value);
+  const start = startOfMonth(now);
+  const end = endOfMonth(now);
+  const days = eachDayOfInterval({ start, end });
+  onCallList.value = days.map(day => ({
+    groupName: 'Terneuzen',
+    day: format(day, 'EEEE dd-MM-yyyy'),
+    contact: '',
+    phone: ''
+  }));
+  loadSchedule();
+};
 const loadSchedule = () => {
   const savedSchedule = localStorage.getItem(`schedule-${selectedYear.value}-${selectedMonth.value}`);
   if (savedSchedule) {
@@ -126,19 +138,7 @@ const loadSchedule = () => {
     });
   }
 };
-const generateCalendar = () => {
-  const now = new Date(selectedYear.value, selectedMonth.value);
-  const start = startOfMonth(now);
-  const end = endOfMonth(now);
-  const days = eachDayOfInterval({ start, end });
-  onCallList.value = days.map(day => ({
-    groupName: 'Terneuzen',
-    day: format(day, 'EEEE dd-MM-yyyy'),
-    contact: '',
-    phone: ''
-  }));
-  loadSchedule();
-};
+
 const months = Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('default', { month: 'long' }));
 const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
 onMounted(async () => {
