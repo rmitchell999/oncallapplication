@@ -1,98 +1,108 @@
-<div class="on-call-application">
+<div class="on-call-application" v-if="isAuthenticated">
     <div class="tabs">
-        <button @click="activeTab = 'schedule'">Terneuzen On-Call</button>
-        <button @click="activeTab = 'contacts'">On-Call Contact List</button>
+      <button @click="activeTab = 'schedule'">Terneuzen On-Call</button>
+      <button v-if="isAdmin" @click="activeTab = 'contacts'">On-Call Contact List</button>
     </div>
-
+  
     <div v-if="activeTab === 'schedule'">
-        <h1>Terneuzen On-Call</h1>
-        <div class="schedule-options">
-            <div class="option-group">
-                <label for="month">Month:</label>
-                <select id="month" v-model="selectedMonth" @change="generateCalendar">
-                    <option v-for="(month, index) in months" :value="index" :key="month">{{ month }}</option>
-                </select>
-            </div>
-
-            <div class="option-group">
-                <label for="year">Year:</label>
-                <select id="year" v-model="selectedYear" @change="generateCalendar">
-                    <option v-for="year in years" :key="year">{{ year }}</option>
-                </select>
-            </div>
-
-            <div class="option-group">
-                <label for="timezone">Timezone:</label>
-                <select id="timezone" v-model="selectedTimezone">
-                    <option v-for="option in timezoneOptions" :key="option">{{ option }}</option>
-                </select>
-            </div>
-
-            <div class="option-group">
-                <label for="start-time">Start Time/EndTime:</label>
-                <select id="start-time" v-model="startTime">
-                    <option v-for="time in timeOptions" :key="time">{{ time }}</option>
-                </select>
-            </div>
+      <h1>Terneuzen On-Call</h1>
+      <div class="schedule-options">
+        <div class="option-group">
+          <label for="month">Month:</label>
+          <select id="month" v-model="selectedMonth" @change="generateCalendar">
+            <option v-for="(month, index) in months" :value="index" :key="month">{{ month }}</option>
+          </select>
         </div>
-
-        <div class="calendar-grid">
-            <div v-for="(entry, index) in onCallList" :key="index" class="calendar-day" :class="{ 'highlighted': entry.contact !== '' }">
-                <div>{{ entry.day }}</div>
-                <select v-model="entry.contact" @change="updatePhoneNumber(index)">
-                    <option v-for="contact in contacts" :key="contact.name" :value="contact.name">
-                        {{ contact.name }}
-                    </option>
-                </select>
-                <div>{{ entry.phone }}</div>
-            </div>
+  
+        <div class="option-group">
+          <label for="year">Year:</label>
+          <select id="year" v-model="selectedYear" @change="generateCalendar">
+            <option v-for="year in years" :key="year">{{ year }}</option>
+          </select>
         </div>
-
-        <div class="action-buttons">
-            <button @click="saveSchedule">Save</button>
+  
+        <div class="option-group">
+          <label for="timezone">Timezone:</label>
+          <select id="timezone" v-model="selectedTimezone">
+            <option v-for="option in timezoneOptions" :key="option">{{ option }}</option>
+          </select>
         </div>
+  
+        <div class="option-group">
+          <label for="start-time">Start Time/EndTime:</label>
+          <select id="start-time" v-model="startTime">
+            <option v-for="time in timeOptions" :key="time">{{ time }}</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="calendar-grid">
+        <div v-for="(entry, index) in onCallList" :key="index" class="calendar-day" :class="{ 'highlighted': entry.contact !== '' }">
+          <div>{{ entry.day }}</div>
+          <select v-if="isAdmin" v-model="entry.contact" @change="updatePhoneNumber(index)">
+            <option v-for="contact in contacts" :key="contact.name" :value="contact.name">
+              {{ contact.name }}
+            </option>
+          </select>
+          <div>{{ entry.phone }}</div>
+        </div>
+      </div>
+  
+      <div class="action-buttons" v-if="isAdmin">
+        <button @click="saveSchedule">Save</button>
+      </div>
     </div>
-
-    <div v-if="activeTab === 'contacts'">
-        <h1>On-Call Contact List</h1>
-        <button @click="(event) => openModal(event)" style="margin-bottom: 20px;">+ ADD</button>
-        <table>
-            <thead>
-                <tr>
-                    <th>Email Address</th>
-                    <th>Phone Number</th>
-                    <th>Name</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(contact, index) in contacts" :key="index" class="contact-row">
-                    <td>{{ contact.email }}</td>
-                    <td>{{ contact.phone }}</td>
-                    <td>{{ contact.name }}</td>
-                    <td>
-                        <button @click="(event) => openModal(event, index)">✏️</button>
-                        <button @click="deleteContact(index)">🗑️</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+  
+    <div v-if="activeTab === 'contacts' && isAdmin">
+      <h1>On-Call Contact List</h1>
+      <button @click="(event) => openModal(event)">+ ADD</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Email Address</th>
+            <th>Phone Number</th>
+            <th>Name</th>
+            <th>Currently On-Call</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(contact, index) in contacts" :key="index">
+            <td>{{ contact.email }}</td>
+            <td>{{ contact.phone }}</td>
+            <td>{{ contact.name }}</td>
+            <td>{{ contact.onCall ? 'On Call' : 'Free' }}</td>
+            <td>
+              <button @click="(event) => openModal(event, index)">✏️</button>
+              <button @click="deleteContact(index)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-
+  
     <div v-if="showModal" class="modal">
-        <div class="modal-content">
-            <h2>{{ editIndex !== null ? 'Edit Contact' : 'Create New Contact' }}</h2>
-            <form @submit.prevent="saveContact">
-                <label>Email *</label>
-                <input v-model="form.email" type="email" required />
-                <label>Phone Number *</label>
-                <input v-model="form.phone" required placeholder="+11234567890" />
-                <label>Name *</label>
-                <input v-model="form.name" required />
-                <p style="color: red;">{{ errorMessage }}</p>
-                <button type="submit">{{ editIndex !== null ? 'UPDATE CONTACT' : 'CREATE CONTACT' }}</button>
-                <button type="button" @click="showModal = false">Cancel</button>
-            </form>
+      <div class="modal-content">
+        <h2>{{ editIndex !== null ? 'Edit Contact' : 'Create New Contact' }}</h2>
+        <form @submit.prevent="saveContact">
+          <label>Email *</label>
+          <input v-model="form.email" type="email" required />
+          <label>Phone Number *</label>
+          <input v-model="form.phone" required placeholder="+11234567890" />
+          <label>Name *</label>
+          <input v-model="form.name" required />
+          <p style="color: red;">{{ errorMessage }}</p>
+          <button type="submit">{{ editIndex !== null ? 'UPDATE CONTACT' : 'UPDATE CONTACT' }}</button>
+            <button type="submit">{{ editIndex !== null ? 'UPDATE CONTACT' : 'CREATE CONTACT' }}</button>
+            <button type="button" @click="showModal = false">Cancel</button>
+          </form>
         </div>
-    </div>
-</div>
+      </div>
+  </div>
+  
+  <div v-else>
+      <h2>Please Sign In to access the application</h2>
+      <AmplifyAuthenticator>
+          <AmplifySignIn slot="sign-in" />
+      </AmplifyAuthenticator>
+  </div>
