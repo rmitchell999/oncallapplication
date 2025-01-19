@@ -3,7 +3,8 @@
 <script setup lang="ts">
 import '@/assets/main.css';
 import { ref, onMounted } from 'vue';
-import { Amplify, Auth } from 'aws-amplify';
+import Amplify from 'aws-amplify'; // Import Amplify
+import { Auth } from '@aws-amplify/auth'; // Import Auth specifically
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 
 interface OnCallEntry {
@@ -31,7 +32,7 @@ const selectedMonth = ref(new Date().getMonth());
 const selectedYear = ref(new Date().getFullYear());
 const isAuthenticated = ref(false);
 const isAdmin = ref(false);
-const user = await Amplify.Auth.currentAuthenticatedUser();
+const user = await Auth.currentAuthenticatedUser();
 
 function generateTimeOptions() {
   const times = [];
