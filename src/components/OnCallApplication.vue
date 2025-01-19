@@ -67,18 +67,31 @@ const saveContacts = () => {
 };
 
 const saveContact = () => {
-  const e164Regex = /^\+?[1-9]\d{1,14}$/;
-  if (!e164Regex.test(form.value.phone)) {
-    errorMessage.value = 'Please enter a valid E.164 phone number.';
-    return;
-  }
-  if (editIndex.value !== null) {
-    contacts.value[editIndex.value] = { ...form.value };
-  } else {
-    contacts.value.push({ ...form.value });
-  }
-  showModal.value = false;
-  saveContacts();
+    const e164Regex = /^\+?[1-9]\d{1,14}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(form.value.email)) {
+        errorMessage.value = 'Please enter a valid email address.';
+        return;
+    }
+
+    if (contacts.value.some(contact => contact.email === form.value.email)) {
+        errorMessage.value = 'This email address is already in use.';
+        return;
+    }
+
+    if (!e164Regex.test(form.value.phone)) {
+        errorMessage.value = 'Please enter a valid E.164 phone number.';
+        return;
+    }
+    
+    if (editIndex.value !== null) {
+        contacts.value[editIndex.value] = { ...form.value };
+    } else {
+        contacts.value.push({ ...form.value });
+    }
+    showModal.value = false;
+    saveContacts();
 };
 
 const deleteContact = (index: number) => {
