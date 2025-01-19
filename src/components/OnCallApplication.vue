@@ -69,23 +69,6 @@ const generateCalendar = () => {
   }));
   loadSchedule();
 };
-
-const loadSchedule = () => {
-  const savedSchedule = localStorage.getItem(`schedule-${selectedYear.value}-${selectedMonth.value}`);
-  if (savedSchedule) {
-    const schedule = JSON.parse(savedSchedule);
-    selectedTimezone.value = schedule.timezone;
-    startTime.value = schedule.startTime;
-    onCallList.value.forEach(entry => {
-      const savedEntry = schedule.onCallList.find((e: OnCallEntry) => e.day === entry.day);
-      if (savedEntry) {
-        entry.contact = savedEntry.contact;
-        entry.phone = savedEntry.phone;
-      }
-    });
-  }
-};
-
 const updatePhoneNumber = (index: number) => {
   const selectedContact = contacts.value.find(contact => contact.name === onCallList.value[index].contact);
   if (selectedContact) {
