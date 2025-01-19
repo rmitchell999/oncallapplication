@@ -4,7 +4,7 @@
 import '@/assets/main.css';
 import { ref, onMounted } from 'vue';
 import Amplify from 'aws-amplify';
-import { Auth } from '@aws-amplify/auth';
+import { Auth } from 'aws-amplify';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 
 interface OnCallEntry {
@@ -58,19 +58,7 @@ const checkUserRole = async () => {
   }
 };
 
-const generateCalendar = () => {
-  const now = new Date(selectedYear.value, selectedMonth.value);
-  const start = startOfMonth(now);
-  const end = endOfMonth(now);
-  const days = eachDayOfInterval({ start, end });
-  onCallList.value = days.map(day => ({
-    groupName: 'Terneuzen',
-    day: format(day, 'EEEE dd-MM-yyyy'),
-    contact: '',
-    phone: ''
-  }));
-  loadSchedule();
-};
+
 const updatePhoneNumber = (index: number) => {
   const selectedContact = contacts.value.find(contact => contact.name === onCallList.value[index].contact);
   if (selectedContact) {
@@ -137,6 +125,19 @@ const loadSchedule = () => {
       }
     });
   }
+};
+const generateCalendar = () => {
+  const now = new Date(selectedYear.value, selectedMonth.value);
+  const start = startOfMonth(now);
+  const end = endOfMonth(now);
+  const days = eachDayOfInterval({ start, end });
+  onCallList.value = days.map(day => ({
+    groupName: 'Terneuzen',
+    day: format(day, 'EEEE dd-MM-yyyy'),
+    contact: '',
+    phone: ''
+  }));
+  loadSchedule();
 };
 const months = Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('default', { month: 'long' }));
 const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
