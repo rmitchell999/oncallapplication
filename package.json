@@ -12,10 +12,12 @@
   },
   "dependencies": {
     "@aws-amplify/auth": "^6.10.0",
+    "@aws-amplify/ui-vue": "^4.2.27",
     "aws-amplify": "^6.12.1",
     "date-fns": "^4.1.0",
     "moment-timezone": "^0.5.46",
-    "vue": "^3.4.21"
+    "vue": "^3.4.21",
+    "vue-router": "^4.0.13"
   },
   "devDependencies": {
     "@aws-amplify/backend": "^1.5.0",

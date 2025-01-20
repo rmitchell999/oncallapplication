@@ -1,7 +1,7 @@
-<div class="on-call-application" v-if="isAuthenticated">
+<div class="on-call-application" v-if="isLoggedIn">
     <div class="tabs">
-      <button @click="activeTab = 'schedule'">Terneuzen On-Call</button>
-      <button v-if="isAdmin" @click="activeTab = 'contacts'">On-Call Contact List</button>
+      <button @click="activeTab = 'schedule'" :class="{ active: activeTab === 'schedule' }">Terneuzen On-Call</button>
+      <button @click="activeTab = 'contacts'" :class="{ active: activeTab === 'contacts' }" v-if="userRole === 'admin'">On-Call Contact List</button>
     </div>
   
     <div v-if="activeTab === 'schedule'">
@@ -55,7 +55,7 @@
   
     <div v-if="activeTab === 'contacts' && isAdmin">
       <h1>On-Call Contact List</h1>
-      <button @click="(event) => openModal(event)">+ ADD</button>
+      <button @click="(event) => openModal(event)" v-if="userRole === 'admin'">+ ADD</button>
       <table>
         <thead>
           <tr>
@@ -63,7 +63,7 @@
             <th>Phone Number</th>
             <th>Name</th>
             <th>Currently On-Call</th>
-            <th>Actions</th>
+            <th v-if="userRole === 'admin'">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -72,7 +72,7 @@
             <td>{{ contact.phone }}</td>
             <td>{{ contact.name }}</td>
             <td>{{ contact.onCall ? 'On Call' : 'Free' }}</td>
-            <td>
+            <td v-if="userRole === 'admin'">
               <button @click="(event) => openModal(event, index)">✏️</button>
               <button @click="deleteContact(index)">🗑️</button>
             </td>
