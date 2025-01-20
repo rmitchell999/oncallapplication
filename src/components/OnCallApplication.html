@@ -1,39 +1,18 @@
-<div class="on-call-application" v-if="isLoggedIn">
-    <div class="tabs">
-      <button @click="activeTab = 'schedule'" :class="{ active: activeTab === 'schedule' }">Terneuzen On-Call</button>
-      <button @click="activeTab = 'contacts'" :class="{ active: activeTab === 'contacts' }" v-if="userRole === 'admin'">On-Call Contact List</button>
-    </div>
-  
-    <div v-if="activeTab === 'schedule'">
-      <h1>Terneuzen On-Call</h1>
-      <div class="schedule-options">
-        <div class="option-group">
-          <label for="month">Month:</label>
-          <select id="month" v-model="selectedMonth" @change="generateCalendar">
-            <option v-for="(month, index) in months" :value="index" :key="month">{{ month }}</option>
-          </select>
-        </div>
-  
-        <div class="option-group">
-          <label for="year">Year:</label>
-          <select id="year" v-model="selectedYear" @change="generateCalendar">
-            <option v-for="year in years" :key="year">{{ year }}</option>
-          </select>
-        </div>
-  
-        <div class="option-group">
-          <label for="timezone">Timezone:</label>
-          <select id="timezone" v-model="selectedTimezone">
-            <option v-for="option in timezoneOptions" :key="option">{{ option }}</option>
-          </select>
-        </div>
-  
-        <div class="option-group">
-          <label for="start-time">Start Time/EndTime:</label>
-          <select id="start-time" v-model="startTime">
-            <option v-for="time in timeOptions" :key="time">{{ time }}</option>
-          </select>
-        </div>
+
+<div class="on-call-application">
+  <div class="tabs">
+    <button @click="activeTab = 'schedule'">Terneuzen On-Call</button>
+    <button @click="activeTab = 'contacts'">On-Call Contact List</button>
+  </div>
+
+  <div v-if="activeTab === 'schedule'">
+    <h1>Terneuzen On-Call</h1>
+    <div class="schedule-options">
+      <div class="option-group">
+        <label for="month">Month:</label>
+        <select id="month" v-model="selectedMonth" @change="generateCalendar">
+          <option v-for="(month, index) in months" :value="index" :key="month">{{ month }}</option>
+        </select>
       </div>
   
       <div class="calendar-grid">

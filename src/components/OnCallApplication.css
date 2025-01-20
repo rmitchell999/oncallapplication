@@ -1,95 +1,21 @@
+
 .authentication-message {
-    padding: 20px;
-    font-size: 1.2em;
-    text-align: center;
-    color: #555;
+  padding: 20px;
+  font-size: 1.2em;
+  text-align: center;
+  color: #555;
 }
 .on-call-application {
-    padding: 20px;
-    font-family: 'Open Sans', sans-serif;
-    background-color: #fff;
-    color: #333;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding-top: 40px;
-  }
-  
-  .tabs {
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-  }
-  
-  .tabs button {
-    margin: 0 10px;
-    padding: 10px 15px;
-    border: none;
-    background-color: #007bff;
-    color: #fff;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .tabs button.active {
-    background-color: #0056b3;
-  }
-  
-  .tabs button:hover {
-    background-color: #0056b3;
-  }
-  
-  .schedule-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin: 20px 0;
-  }
-  
-  .option-group {
-    display: flex;
-    align-items: center;
-  }
-  
-  .option-group label {
-    margin-right: 5px;
-  }
-  
-  select {
-    padding: 8px 12px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  button {
-    color: #fff;
-  }
-  
-  button:hover {
-    background-color: #e9ecef;
-  }
-  
-  .action-buttons {
-    margin-top: 20px;
-  }
-  
-  .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;  /* Increase for better spacing */
-    max-width: 100%;
-    margin: 0 auto;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px; /* Add some padding to the grid */
+  padding: 20px;
+  font-family: 'Open Sans', sans-serif;
+  background-color: #fff;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 40px;
 }
   
   .calendar-day {
@@ -167,3 +93,36 @@
   .modal-content button[type="button"] {
     background-color: #6c757d;
   }
+.modal-content h2 {
+  margin-bottom: 20px;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-content label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.modal-content input {
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-content button {
+  padding: 10px;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.modal-content button[type="button"] {
+  background-color: #6c757d;
+}
