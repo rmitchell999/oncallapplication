@@ -1,6 +1,7 @@
 <template src="./OnCallApplication.html"></template>
 
 <script setup lang="ts">
+import { Auth } from 'aws-amplify';
 import '@/assets/main.css';
 import { ref, onMounted } from 'vue';
 import Amplify from 'aws-amplify'; // Import Amplify
@@ -25,14 +26,11 @@ const contacts = ref([
 ]);
 const onCallList = ref<OnCallEntry[]>([]);
 const timeOptions = ref(generateTimeOptions());
-const timezoneOptions = ref(['GMT', 'EST', 'PST', 'CET']);
+const timezoneOptions = ref(['GMT', 'EST', 'PST', 'CET', 'BST']);
 const selectedTimezone = ref('GMT');
 const startTime = ref('');
 const selectedMonth = ref(new Date().getMonth());
 const selectedYear = ref(new Date().getFullYear());
-const isAuthenticated = ref(false);
-const isAdmin = ref(false);
-const user = await Auth.currentAuthenticatedUser();
 
 function generateTimeOptions() {
   const times = [];
@@ -45,19 +43,6 @@ function generateTimeOptions() {
   }
   return times;
 }
-
-const checkUserRole = async () => {
-  try {
-    const user = await Auth.currentAuthenticatedUser({ bypassCache: true });
-    const userGroups = user?.signInUserSession?.accessToken?.payload['cognito:groups'];
-    isAdmin.value = userGroups && userGroups.includes('TerneuzenAdmin');
-    isAuthenticated.value = true;
-  } catch (error) {
-    console.error("User not authenticated:", error);
-    isAuthenticated.value = false;
-  }
-};
-
 
 const updatePhoneNumber = (index: number) => {
   const selectedContact = contacts.value.find(contact => contact.name === onCallList.value[index].contact);
@@ -78,39 +63,44 @@ const openModal = (event: MouseEvent, index: number | null = null) => {
   showModal.value = true;
   errorMessage.value = '';
 };
+
 const saveContacts = () => {
   localStorage.setItem('contacts', JSON.stringify(contacts.value));
 };
+
 const saveContact = () => {
-  const e164Regex = /^\+?[1-9]\d{1,14}$/;
-  if (!e164Regex.test(form.value.phone)) {
-    errorMessage.value = 'Please enter a valid E.164 phone number.';
-    return;
-  }
-  if (editIndex.value !== null) {
-    contacts.value[editIndex.value] = { ...form.value };
-  } else {
-    contacts.value.push({ ...form.value });
-  }
-  showModal.value = false;
-  saveContacts();
+    const e164Regex = /^\+?[1-9]\d{1,14}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(form.value.email)) {
+        errorMessage.value = 'Please enter a valid email address.';
+        return;
+    }
+
+    if (contacts.value.some(contact => contact.email === form.value.email)) {
+        errorMessage.value = 'This email address is already in use.';
+        return;
+    }
+
+    if (!e164Regex.test(form.value.phone)) {
+        errorMessage.value = 'Please enter a valid E.164 phone number.';
+        return;
+    }
+    
+    if (editIndex.value !== null) {
+        contacts.value[editIndex.value] = { ...form.value };
+    } else {
+        contacts.value.push({ ...form.value });
+    }
+    showModal.value = false;
+    saveContacts();
 };
+
 const deleteContact = (index: number) => {
   contacts.value.splice(index, 1);
   saveContacts();
 };
 
-const saveSchedule = () => {
-  const confirmation = confirm('Are you sure you want to save these changes?');
-  if (!confirmation) return;
-  const schedule = {
-    timezone: selectedTimezone.value,
-    startTime: startTime.value,
-    onCallList: onCallList.value,
-  };
-  localStorage.setItem(`schedule-${selectedYear.value}-${selectedMonth.value}`, JSON.stringify(schedule));
-  console.log('Schedule saved:', schedule);
-};
 const generateCalendar = () => {
   const now = new Date(selectedYear.value, selectedMonth.value);
   const start = startOfMonth(now);
@@ -124,6 +114,19 @@ const generateCalendar = () => {
   }));
   loadSchedule();
 };
+
+const saveSchedule = () => {
+  const confirmation = confirm('Are you sure you want to save these changes?');
+  if (!confirmation) return;
+  const schedule = {
+    timezone: selectedTimezone.value,
+    startTime: startTime.value,
+    onCallList: onCallList.value,
+  };
+  localStorage.setItem(`schedule-${selectedYear.value}-${selectedMonth.value}`, JSON.stringify(schedule));
+  console.log('Schedule saved:', schedule);
+};
+
 const loadSchedule = () => {
   const savedSchedule = localStorage.getItem(`schedule-${selectedYear.value}-${selectedMonth.value}`);
   if (savedSchedule) {
@@ -142,18 +145,13 @@ const loadSchedule = () => {
 
 const months = Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('default', { month: 'long' }));
 const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
-onMounted(async () => {
-  await checkUserRole(); // Check user authentication and role
-  if (isAdmin.value) {
-    const savedContacts = localStorage.getItem('contacts');
-    if (savedContacts) {
-      contacts.value = JSON.parse(savedContacts);
-    }
-  } else {
-    contacts.value = []; // For read-only users, ensure this is empty
+
+onMounted(() => {
+  const savedContacts = localStorage.getItem('contacts');
+  if (savedContacts) {
+    contacts.value = JSON.parse(savedContacts);
   }
   generateCalendar();
 });
 </script>
-
 <style src="./OnCallApplication.css" scoped></style>
