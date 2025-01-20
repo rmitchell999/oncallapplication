@@ -1,7 +1,7 @@
 import OnCallApplication from '@/components/OnCallApplication.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginPage from '@/components/LoginPage.vue';
-import { Auth } from 'aws-amplify'; // Ensure this is correctly imported
+import { Auth } from '@aws-amplify/auth'; // Ensure this import
 
 const routes = [
   {

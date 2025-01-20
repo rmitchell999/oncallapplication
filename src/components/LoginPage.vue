@@ -12,7 +12,7 @@
   
   <script setup lang="ts">
   import { ref } from 'vue';
-  import { Auth } from 'aws-amplify';
+  mport { Auth } from '@aws-amplify/auth'; // Ensure this import
   
   const email = ref('');
   const password = ref('');
