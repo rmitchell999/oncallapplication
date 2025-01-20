@@ -11,7 +11,7 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
-    "aws-amplify": "^6.6.6",
+    "aws-amplify": "^6.12.1",
     "date-fns": "^4.1.0",
     "moment-timezone": "^0.5.46",
     "vue": "^3.4.21"
