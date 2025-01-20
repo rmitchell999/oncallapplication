@@ -1,26 +1,33 @@
-import { createRouter, createWebHistory } from 'vue-router';
 import OnCallApplication from '@/components/OnCallApplication.vue';
+import { createRouter, createWebHistory } from 'vue-router';
 import LoginPage from '@/components/LoginPage.vue';
-import { Auth } from 'aws-amplify';
+import { Auth } from 'aws-amplify'; // Ensure this is correctly imported
 
 const routes = [
-  { path: '/', component: OnCallApplication },
-  { path: '/login', component: LoginPage },
+  {
+    path: '/login',
+    name: 'Login',
+    component: LoginPage,
+  },
+  // Add other routes here
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(process.env.BASE_URL),
   routes,
 });
 
-// Navigation guard to protect routes
-router.beforeEach(async (to, from, next) => {
-  const isAuthenticated = await Auth.currentAuthenticatedUser()
-    .then(() => true)
-    .catch(() => false);
-
-  if (to.path !== '/login' && !isAuthenticated) {
-    next('/login');
+// Example usage of Auth to protect routes
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  if (requiresAuth) {
+    Auth.currentAuthenticatedUser()
+      .then(() => {
+        next();
+      })
+      .catch(() => {
+        next({ path: '/login' });
+      });
   } else {
     next();
   }

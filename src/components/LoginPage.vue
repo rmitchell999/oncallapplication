@@ -1,19 +1,16 @@
-<!-- src/components/LoginPage.vue -->
 <template>
     <div>
       <h1>Login</h1>
-      <form @submit.prevent="signIn">
-        <label>Email</label>
-        <input v-model="email" type="email" required />
-        <label>Password</label>
-        <input v-model="password" type="password" required />
+      <form @submit.prevent="login">
+        <input v-model="email" type="email" placeholder="Email" required />
+        <input v-model="password" type="password" placeholder="Password" required />
         <button type="submit">Login</button>
       </form>
-      <p>{{ errorMessage }}</p>
+      <p v-if="errorMessage">{{ errorMessage }}</p>
     </div>
   </template>
   
-  <script setup>
+  <script setup lang="ts">
   import { ref } from 'vue';
   import { Auth } from 'aws-amplify';
   
@@ -21,12 +18,17 @@
   const password = ref('');
   const errorMessage = ref('');
   
-  const signIn = async () => {
+  const login = async () => {
     try {
       await Auth.signIn(email.value, password.value);
-      window.location.href = '/';
+      // Handle successful login
     } catch (error) {
-      errorMessage.value = error.message;
+      // Handle error
+      if (error instanceof Error) {
+        errorMessage.value = error.message;
+      } else {
+        errorMessage.value = String(error);
+      }
     }
   };
   </script>
